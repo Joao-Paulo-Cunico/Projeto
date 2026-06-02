@@ -3,29 +3,68 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="/Dashbord/dashboard.css">
+    <link rel="stylesheet" href="dashboard.css">
     <script src="dash.js" defer></script>
     <title>Tela Inicial</title>
 </head>
 <body>
-    <header></header>
-    
-    <h3 id="saldo">Saldo atual: R$ 0</h3>
+    <div class="app">
+        <aside class="sidebar">
+            <h2>Dashboard</h2>
+            <nav>
+                <ul class="menu">
+                    <li>Visão Geral</li>
+                    <li>Receitas</li>
+                    <li>Gráficos</li>
+                    <li>Relatórios</li>
+                    <li>Metas</li>
+                    <li>Configurações</li>
+                </ul>
+            </nav>
+        </aside>
 
-    <div id="lista-receita">
-        <div id="Adiconar-receita">
-            <input id="input-receita" type="number" placeholder="Adicione sua receita:">
-            <input id="descricao-receita" type="text" placeholder="Adicione a descricao">
-            <button id="btn-receita">Adicionar</button>
-        </div>
-    </div>
+        <main class="main">
+            <div class="topbar">
+                <h1>Olá</h1>
+                <h3 id="saldo">Saldo: R$ 0</h3>
+            </div>
 
-    <div id="lista-despesa">
-        <div id="Adicionar-despesa">
-            <input id="input-despesa" type="number" placeholder="Adicione sua despesa">
-            <input id="descricao-despesa" type="text" placeholder="Adicione a descricao">
-            <button id="btn-despesa">Adicionar</button>
-        </div>
+            <section class="grid">
+                <article class="card">
+                    <h4>Receitas</h4>
+                    <div id="lista-receita">
+                        <div id="Adiconar-receita" class="form-inline">
+                            <input id="input-receita" type="number" placeholder="Valor">
+                            <input id="descricao-receita" type="text" placeholder="Descrição">
+                            <button id="btn-receita">Adicionar</button>
+                        </div>
+                    </div>
+                </article>
+
+                <article class="card">
+                    <h4>Despesas</h4>
+                    <div id="lista-despesa">
+                        <div id="Adicionar-despesa" class="form-inline">
+                            <input id="input-despesa" type="number" placeholder="Valor">
+                            <input id="descricao-despesa" type="text" placeholder="Descrição">
+                            <button id="btn-despesa">Adicionar</button>
+                        </div>
+                    </div>
+                </article>
+
+                <article class="card">
+                    <h4>Histórico</h4>
+                    <div class="historico">
+                        <!-- itens adicionados aparecem aqui -->
+                    </div>
+                </article>
+
+                <article class="card">
+                    <h4>Extras</h4>
+                    <p>Relatórios e metas</p>
+                </article>
+            </section>
+        </main>
     </div>
     
 
