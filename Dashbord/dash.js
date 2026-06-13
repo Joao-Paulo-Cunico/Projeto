@@ -9,16 +9,23 @@ const input_descricao_despesa = document.getElementById("descricao-despesa");
 const input_receita = document.getElementById("input-receita");
 const btn_receita = document.getElementById("btn-receita");
 const lista_receitas = document.getElementById("lista-receita");
+
+//RECEITA CATEGORIA
+const categoriaReceita = document.getElementById("categoria-receita");
+
 //DESPESA
 const lista_despesa = document.getElementById("lista-despesa");
 const input_despesa = document.getElementById("input-despesa");
 const btn_despesa = document.getElementById("btn-despesa");
+//DESPESA CATEGORIA
+const categoriaDespesa = document.getElementById("categoria-despesa");
 
 //ADICIONAR RECEITA
 btn_receita.addEventListener("click", function () {
     const tipo = String("receita");
     const valor = Number(input_receita.value);
     const descricao = String(input_descricao_receita.value);
+    const categoriaRec = categoriaReceita.value;
 
     if(!validarValor(valor)){
         return;
@@ -32,7 +39,7 @@ btn_receita.addEventListener("click", function () {
 
     const novaReceita = document.createElement("p");
     
-    novaReceita.textContent = `Receita: ${descricao} R$ ${valor}`;
+    novaReceita.textContent = `Valor: R$ ${valor} | Categoria: ${categoriaRec} | Descrição:  ${descricao}`;
     
     const botao = criarBotaoExcluir(item, valor, tipo);
     
@@ -49,6 +56,7 @@ btn_despesa.addEventListener("click", function () {
     const tipo = String("despesa");
     const valor = Number(input_despesa.value);
     const descricao = String(input_descricao_despesa.value);
+    const categoriaDes = categoriaDespesa.value
     
     if (!validarValor(valor)) {
         return;
@@ -62,7 +70,7 @@ btn_despesa.addEventListener("click", function () {
 
     const itemDespesa = document.createElement("div");
     
-    novaDespesa.textContent = `Despesa: ${descricao} R$ ${valor}`;
+    novaDespesa.textContent = `R$ ${valor} | Categoria ${categoriaDes} | Descricção: ${descricao}`;
     
     const botao = criarBotaoExcluir(itemDespesa, valor, tipo);
     

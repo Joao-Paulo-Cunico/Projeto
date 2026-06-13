@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="pt-br">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -7,6 +8,7 @@
     <script src="dash.js" defer></script>
     <title>Tela Inicial</title>
 </head>
+
 <body>
     <div class="app">
         <aside class="sidebar">
@@ -36,6 +38,14 @@
                         <div id="Adiconar-receita" class="form-inline">
                             <input id="input-receita" type="number" placeholder="Valor">
                             <input id="descricao-receita" type="text" placeholder="Descrição">
+                            <select id="categoria-receita">
+                                <option value="salario">Salario</option>
+                                <option value="pix">Pix</option>
+                                <option value="presente">Presente</option>
+                                <option value="emprestimo">Emprestimo</option>
+                                <option value="transferencia">Transferencia</option>
+                                <option value="outros">Outros</option>
+                            </select>
                             <button id="btn-receita">Adicionar</button>
                         </div>
                     </div>
@@ -47,6 +57,23 @@
                         <div id="Adicionar-despesa" class="form-inline">
                             <input id="input-despesa" type="number" placeholder="Valor">
                             <input id="descricao-despesa" type="text" placeholder="Descrição">
+                            <select id="categoria-despesa">
+                                <option value="academia">Academia</option>
+                                <option value="pix">Pix</option>
+                                <option value="presente">Presente</option>
+                                <option value="assinatura">Assinatura</option>
+                                <option value="casa">Casa</option>
+                                <option value="educacao">Educacao</option>
+                                <option value="lazer">Lazer</option>
+                                <option value="operacao_bancaria">Operacao Bancaria</option>
+                                <option value="saude">Saude</option>
+                                <option value="servicos">Servicos</option>
+                                <option value="mercado">Mercado</option>
+                                <option value="restaurante">Restaurante</option>
+                                <option value="trnasporte">Transporte</option>
+                                <option value="viagens">Viagens</option>
+                                <option value="outros">Outros</option>
+                            </select>
                             <button id="btn-despesa">Adicionar</button>
                         </div>
                     </div>
@@ -66,9 +93,10 @@
             </section>
         </main>
     </div>
-    
+
 
 
 
 </body>
+
 </html>
