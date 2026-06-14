@@ -68,8 +68,8 @@ h3#saldo{
 
 .card h4{margin:0 0 12px 0}
 
-.form-inline{display:flex;gap:8px;align-items:center}
-.form-inline input{flex:1;padding:8px;border:1px solid #e5e7eb;border-radius:6px}
+.form-inline{display:flex;gap:8px;align-items:center;margin-bottom:12px}
+.form-inline input,.form-inline select{flex:1;padding:8px;border:1px solid #e5e7eb;border-radius:6px}
 .form-inline button{padding:8px 12px;border:none;background:var(--accent);color:#fff;border-radius:6px;cursor:pointer}
 
 /* small screens */

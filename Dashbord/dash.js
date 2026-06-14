@@ -1,118 +1,137 @@
 const saldo = document.getElementById("saldo");
 let saldoTotal = 0;
+let movimentacoes = [];
+const dadosSalvos = localStorage.getItem("movimentacoes");
 
-//BOTOES
-//DESCRICAO
+if (dadosSalvos) {
+    movimentacoes = JSON.parse(dadosSalvos);
+}
+
+// DESCRICAO
 const input_descricao_receita = document.getElementById("descricao-receita");
 const input_descricao_despesa = document.getElementById("descricao-despesa");
-//RECEITA
+
+// RECEITA
 const input_receita = document.getElementById("input-receita");
 const btn_receita = document.getElementById("btn-receita");
 const lista_receitas = document.getElementById("lista-receita");
-
-//RECEITA CATEGORIA
 const categoriaReceita = document.getElementById("categoria-receita");
 
-//DESPESA
+// DESPESA
 const lista_despesa = document.getElementById("lista-despesa");
 const input_despesa = document.getElementById("input-despesa");
 const btn_despesa = document.getElementById("btn-despesa");
-//DESPESA CATEGORIA
 const categoriaDespesa = document.getElementById("categoria-despesa");
 
-//ADICIONAR RECEITA
+//RECEITA
 btn_receita.addEventListener("click", function () {
-    const tipo = String("receita");
     const valor = Number(input_receita.value);
-    const descricao = String(input_descricao_receita.value);
-    const categoriaRec = categoriaReceita.value;
+    const descricao = input_descricao_receita.value;
+    const categoria = categoriaReceita.value;
 
-    if(!validarValor(valor)){
-        return;
-    }
-
-    saldoTotal += valor;
-
-    atualizarSaldo();
-
-    const item = document.createElement("div");
-
-    const novaReceita = document.createElement("p");
-    
-    novaReceita.textContent = `Valor: R$ ${valor} | Categoria: ${categoriaRec} | Descrição:  ${descricao}`;
-    
-    const botao = criarBotaoExcluir(item, valor, tipo);
-    
-    item.appendChild(novaReceita);
-    item.appendChild(botao);
-    lista_receitas.appendChild(item);
-    
-    input_receita.value = "";
-    input_descricao_receita.value = "";
-})
-
-//ADICIONAR DESPESA
-btn_despesa.addEventListener("click", function () {
-    const tipo = String("despesa");
-    const valor = Number(input_despesa.value);
-    const descricao = String(input_descricao_despesa.value);
-    const categoriaDes = categoriaDespesa.value
-    
     if (!validarValor(valor)) {
         return;
     }
 
-    saldoTotal -= valor;
-    
-    atualizarSaldo();
+    movimentacoes.push({
+        tipo: "receita",
+        descricao,
+        valor,
+        categoria
+    });
 
-    const novaDespesa = document.createElement("p");
+    salvarDados();
+    renderizarMovimentacoes();
 
-    const itemDespesa = document.createElement("div");
-    
-    novaDespesa.textContent = `R$ ${valor} | Categoria ${categoriaDes} | Descricção: ${descricao}`;
-    
-    const botao = criarBotaoExcluir(itemDespesa, valor, tipo);
-    
-    itemDespesa.appendChild(novaDespesa);
-    itemDespesa.appendChild(botao);
-    lista_despesa.appendChild(itemDespesa);
-    
+    input_receita.value = "";
+    input_descricao_receita.value = "";
+});
+
+//DESPESA
+btn_despesa.addEventListener("click", function () {
+    const valor = Number(input_despesa.value);
+    const descricao = input_descricao_despesa.value;
+    const categoria = categoriaDespesa.value;
+
+    if (!validarValor(valor)) {
+        return;
+    }
+
+    movimentacoes.push({
+        tipo: "despesa",
+        descricao,
+        valor,
+        categoria
+    });
+
+    salvarDados();
+    renderizarMovimentacoes();
+
     input_despesa.value = "";
     input_descricao_despesa.value = "";
-})
+});
 
-
-function atualizarSaldo(){
+function atualizarSaldo() {
     saldo.textContent = `Saldo: R$ ${saldoTotal}`;
 }
 
-function validarValor(valor){
+function validarValor(valor) {
     if (valor <= 0) {
-        alert("Digite numeros Positivos")
+        alert("Digite numeros positivos");
         return false;
     }
+
     return true;
 }
 
-function criarBotaoExcluir(item, valor, tipo){
+function criarBotaoExcluir(indice) {
     const botao = document.createElement("button");
-    
-    botao.textContent = `Excluir`;
-    
-    botao.addEventListener("click", function () {
 
-        if (tipo === "receita") {
-            saldoTotal -= valor;
-        } 
-        else {
-            saldoTotal += valor;
-        }
-        
-        atualizarSaldo();
-        
-        item.remove();
-    })
+    botao.textContent = "Excluir";
+
+    botao.addEventListener("click", function () {
+        movimentacoes.splice(indice, 1);
+        salvarDados();
+        renderizarMovimentacoes();
+    });
 
     return botao;
 }
+
+function salvarDados() {
+    localStorage.setItem(
+        "movimentacoes",
+        JSON.stringify(movimentacoes)
+    );
+}
+
+function renderizarMovimentacoes() {
+    saldoTotal = 0;
+
+    lista_receitas.innerHTML = "";
+    lista_despesa.innerHTML = "";
+
+    movimentacoes.forEach(function (mov, indice) {
+        const item = document.createElement("div");
+        const texto = document.createElement("p");
+
+        texto.textContent = `R$ ${mov.valor} | Categoria: ${mov.categoria} | Descricao: ${mov.descricao}`;
+
+        const botao = criarBotaoExcluir(indice);
+
+        item.appendChild(texto);
+        item.appendChild(botao);
+
+        if (mov.tipo === "receita") {
+            saldoTotal += mov.valor;
+            lista_receitas.appendChild(item);
+        } else {
+            saldoTotal -= mov.valor;
+            lista_despesa.appendChild(item);
+        }
+    });
+
+    atualizarSaldo();
+}
+
+renderizarMovimentacoes();
