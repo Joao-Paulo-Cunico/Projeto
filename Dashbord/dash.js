@@ -23,6 +23,11 @@ const input_despesa = document.getElementById("input-despesa");
 const btn_despesa = document.getElementById("btn-despesa");
 const categoriaDespesa = document.getElementById("categoria-despesa");
 
+//HISTORICO
+const historico_geral = document.getElementById("historico");
+
+
+
 //RECEITA
 btn_receita.addEventListener("click", function () {
     const valor = Number(input_receita.value);
@@ -42,6 +47,7 @@ btn_receita.addEventListener("click", function () {
 
     salvarDados();
     renderizarMovimentacoes();
+    renderizarHistorico();
 
     input_receita.value = "";
     input_descricao_receita.value = "";
@@ -66,6 +72,7 @@ btn_despesa.addEventListener("click", function () {
 
     salvarDados();
     renderizarMovimentacoes();
+    renderizarHistorico();
 
     input_despesa.value = "";
     input_descricao_despesa.value = "";
@@ -93,6 +100,7 @@ function criarBotaoExcluir(indice) {
         movimentacoes.splice(indice, 1);
         salvarDados();
         renderizarMovimentacoes();
+        renderizarHistorico();
     });
 
     return botao;
@@ -134,4 +142,25 @@ function renderizarMovimentacoes() {
     atualizarSaldo();
 }
 
+function renderizarHistorico() {
+    historico_geral.innerHTML = "";
+
+    movimentacoes.forEach(function (mov) {
+        const item = document.createElement("p");
+
+        if (mov.tipo === "receita") {
+            emoji = "💰";
+        } else {
+            emoji = "💸";
+        }
+
+
+        item.textContent = `${emoji} ${mov.tipo} | R$ ${mov.valor} | ${mov.descricao}`;
+
+        historico_geral.appendChild(item);
+
+    });
+}
+
+renderizarHistorico();
 renderizarMovimentacoes();
