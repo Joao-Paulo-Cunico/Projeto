@@ -132,10 +132,10 @@ function renderizarMovimentacoes() {
 
         if (mov.tipo === "receita") {
             saldoTotal += mov.valor;
-            lista_receitas.appendChild(item);
+            lista_receitas.prepend(item);
         } else {
             saldoTotal -= mov.valor;
-            lista_despesa.appendChild(item);
+            lista_despesa.prepend(item);
         }
     });
 
@@ -147,6 +147,7 @@ function renderizarHistorico() {
 
     movimentacoes.forEach(function (mov) {
         const item = document.createElement("p");
+        const categoria = mov.categoria.charAt(0).toUpperCase() + mov.categoria.slice(1);
 
         if (mov.tipo === "receita") {
             emoji = "💰";
@@ -155,9 +156,9 @@ function renderizarHistorico() {
         }
 
 
-        item.textContent = `${emoji} ${mov.tipo} | R$ ${mov.valor} | ${mov.descricao}`;
+        item.textContent = `${emoji} ${mov.tipo} | R$ ${mov.valor} | ${categoria} | ${mov.descricao}`;
 
-        historico_geral.appendChild(item);
+        historico_geral.prepend(item);
 
     });
 }
