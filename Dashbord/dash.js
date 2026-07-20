@@ -25,7 +25,10 @@ const categoriaDespesa = document.getElementById("categoria-despesa");
 
 //HISTORICO
 const historico_geral = document.getElementById("historico");
-
+const filtro_historico = document.getElementById("filtro-historico");
+filtro_historico.addEventListener("change", function () {
+    renderizarHistorico();
+});
 
 
 //RECEITA
@@ -145,23 +148,38 @@ function renderizarMovimentacoes() {
 function renderizarHistorico() {
     historico_geral.innerHTML = "";
 
-    movimentacoes.forEach(function (mov) {
-        const item = document.createElement("p");
-        const categoria = mov.categoria.charAt(0).toUpperCase() + mov.categoria.slice(1);
+    const filtro = filtro_historico.value;
 
-        if (mov.tipo === "receita") {
-            emoji = "💰";
-        } else {
-            emoji = "💸";
+    movimentacoes.forEach(function (mov) {
+
+        if (filtro !== "todos" && mov.categoria !== filtro) {
+            return;
         }
 
+        const item = document.createElement("p");
 
-        item.textContent = `${emoji} ${mov.tipo} | R$ ${mov.valor} | ${categoria} | ${mov.descricao}`;
+        const categoria =
+            mov.categoria.charAt(0).toUpperCase() +
+            mov.categoria.slice(1);
+
+        const emoji = mov.tipo === "receita" ? "💰" : "💸";
+
+        item.textContent =
+            `${emoji} ${mov.tipo} | R$ ${mov.valor} | ${categoria} | ${mov.descricao}`;
 
         historico_geral.prepend(item);
-
     });
 }
+
+function filtrarHistorico(filtro) {
+    historico_geral.innerHTML = "";
+    movimentacoes.forEach(function (mov) {
+        if (filtro !== "todos" && mov.categoria !== filtro) {
+            return;
+        }
+    });
+}
+
 
 renderizarHistorico();
 renderizarMovimentacoes();

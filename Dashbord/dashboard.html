@@ -35,17 +35,17 @@
                 <article class="card">
                     <h4>Receitas</h4>
                     <div id="Adicionar-receita" class="form-inline">
-                            <input id="input-receita" type="number" placeholder="Valor">
-                            <input id="descricao-receita" type="text" placeholder="Descrição">
-                            <select id="categoria-receita">
-                                <option value="salario">Salario</option>
-                                <option value="pix">Pix</option>
-                                <option value="presente">Presente</option>
-                                <option value="emprestimo">Emprestimo</option>
-                                <option value="transferencia">Transferencia</option>
-                                <option value="outros">Outros</option>
-                            </select>
-                            <button id="btn-receita">Adicionar</button>
+                        <input id="input-receita" type="number" placeholder="Valor">
+                        <input id="descricao-receita" type="text" placeholder="Descrição">
+                        <select id="categoria-receita">
+                            <option value="salario">Salario</option>
+                            <option value="pix">Pix</option>
+                            <option value="presente">Presente</option>
+                            <option value="emprestimo">Emprestimo</option>
+                            <option value="transferencia">Transferencia</option>
+                            <option value="outros">Outros</option>
+                        </select>
+                        <button id="btn-receita">Adicionar</button>
                     </div>
                     <div id="lista-receita"></div>
                 </article>
@@ -53,32 +53,57 @@
                 <article class="card">
                     <h4>Despesas</h4>
                     <div id="Adicionar-despesa" class="form-inline">
-                            <input id="input-despesa" type="number" placeholder="Valor">
-                            <input id="descricao-despesa" type="text" placeholder="Descrição">
-                            <select id="categoria-despesa">
-                                <option value="academia">Academia</option>
-                                <option value="pix">Pix</option>
-                                <option value="presente">Presente</option>
-                                <option value="assinatura">Assinatura</option>
-                                <option value="casa">Casa</option>
-                                <option value="educacao">Educacao</option>
-                                <option value="lazer">Lazer</option>
-                                <option value="operacao_bancaria">Operacao Bancaria</option>
-                                <option value="saude">Saude</option>
-                                <option value="servicos">Servicos</option>
-                                <option value="mercado">Mercado</option>
-                                <option value="restaurante">Restaurante</option>
-                                <option value="trnasporte">Transporte</option>
-                                <option value="viagens">Viagens</option>
-                                <option value="outros">Outros</option>
-                            </select>
-                            <button id="btn-despesa">Adicionar</button>
+                        <input id="input-despesa" type="number" placeholder="Valor">
+                        <input id="descricao-despesa" type="text" placeholder="Descrição">
+                        <select id="categoria-despesa">
+                            <option value="academia">Academia</option>
+                            <option value="pix">Pix</option>
+                            <option value="presente">Presente</option>
+                            <option value="assinatura">Assinatura</option>
+                            <option value="casa">Casa</option>
+                            <option value="educacao">Educacao</option>
+                            <option value="lazer">Lazer</option>
+                            <option value="operacao_bancaria">Operacao Bancaria</option>
+                            <option value="saude">Saude</option>
+                            <option value="servicos">Servicos</option>
+                            <option value="mercado">Mercado</option>
+                            <option value="restaurante">Restaurante</option>
+                            <option value="trnasporte">Transporte</option>
+                            <option value="viagens">Viagens</option>
+                            <option value="outros">Outros</option>
+                        </select>
+                        <button id="btn-despesa">Adicionar</button>
                     </div>
                     <div id="lista-despesa"></div>
                 </article>
 
                 <article class="card">
                     <h4>Histórico</h4>
+
+                    <select id="filtro-historico">
+                        <option value="todos">Todos</option>
+                        <option value="salario">Salario</option>
+                        <option value="pix">Pix</option>
+                        <option value="presente">Presente</option>
+                        <option value="emprestimo">Emprestimo</option>
+                        <option value="transferencia">Transferencia</option>
+                        <option value="outros">Outros</option>
+                        <option value="academia">Academia</option>
+                        <option value="pix">Pix</option>
+                        <option value="presente">Presente</option>
+                        <option value="assinatura">Assinatura</option>
+                        <option value="casa">Casa</option>
+                        <option value="educacao">Educacao</option>
+                        <option value="lazer">Lazer</option>
+                        <option value="operacao_bancaria">Operacao Bancaria</option>
+                        <option value="saude">Saude</option>
+                        <option value="servicos">Servicos</option>
+                        <option value="mercado">Mercado</option>
+                        <option value="restaurante">Restaurante</option>
+                        <option value="trnasporte">Transporte</option>
+                        <option value="viagens">Viagens</option>
+                    </select>
+
                     <div id="historico">
                         <!-- itens adicionados aparecem aqui -->
                     </div>
