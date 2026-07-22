@@ -30,6 +30,12 @@ filtro_historico.addEventListener("change", function () {
     renderizarHistorico();
 });
 
+//SOMA DESPESAS/RECEITAS TOPBAR
+const receita_total = document.getElementById("receita-total")
+const despesa_total = document.getElementById("despesa-total")
+let receitaTotal = 0;
+let despesaTotal = 0;
+
 
 //RECEITA
 btn_receita.addEventListener("click", function () {
@@ -81,8 +87,11 @@ btn_despesa.addEventListener("click", function () {
     input_descricao_despesa.value = "";
 });
 
+//ATUALIZA O SALDO/RECEITA/DESPESA TOTAL
 function atualizarSaldo() {
     saldo.textContent = `Saldo: R$ ${saldoTotal}`;
+    receita_total.textContent = `Receitas Totais: R$ ${receitaTotal}`;
+    despesa_total.textContent = `Receitas Totais: R$ ${despesaTotal}`;
 }
 
 function validarValor(valor) {
@@ -116,8 +125,8 @@ function salvarDados() {
     );
 }
 
+// RENDERIZA AS MOVIMETACOES DE RECEITA E DESPESA
 function renderizarMovimentacoes() {
-    saldoTotal = 0;
 
     lista_receitas.innerHTML = "";
     lista_despesa.innerHTML = "";
@@ -134,11 +143,29 @@ function renderizarMovimentacoes() {
         item.appendChild(botao);
 
         if (mov.tipo === "receita") {
-            saldoTotal += mov.valor;
             lista_receitas.prepend(item);
         } else {
-            saldoTotal -= mov.valor;
             lista_despesa.prepend(item);
+        }
+    });
+
+    calcularMovimentacoes();
+}
+
+//ATUALIZA O SALDO CALCULANDO SEPARADAMENTE A SOMA DE CADA UM
+function calcularMovimentacoes() {
+    saldoTotal = 0;
+    receitaTotal = 0;
+    despesaTotal = 0;
+
+    movimentacoes.forEach(function (mov, indice) {
+
+        if (mov.tipo === "receita") {
+            saldoTotal += mov.valor;
+            receitaTotal += mov.valor;
+        } else {
+            saldoTotal -= mov.valor;
+            despesaTotal += mov.valor;
         }
     });
 
@@ -171,15 +198,6 @@ function renderizarHistorico() {
     });
 }
 
-function filtrarHistorico(filtro) {
-    historico_geral.innerHTML = "";
-    movimentacoes.forEach(function (mov) {
-        if (filtro !== "todos" && mov.categoria !== filtro) {
-            return;
-        }
-    });
-}
-
-
+calcularMovimentacoes();
 renderizarHistorico();
 renderizarMovimentacoes();
