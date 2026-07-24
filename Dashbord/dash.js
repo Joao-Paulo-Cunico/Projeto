@@ -39,61 +39,67 @@ let despesaTotal = 0;
 
 //RECEITA
 btn_receita.addEventListener("click", function () {
-    const valor = Number(input_receita.value);
-    const descricao = input_descricao_receita.value;
-    const categoria = categoriaReceita.value;
 
-    if (!validarValor(valor)) {
-        return;
-    }
+    adicionarMovimentacao(
+        "receita",
+        input_receita,
+        input_descricao_receita,
+        categoriaReceita
+    );
 
-    movimentacoes.push({
-        tipo: "receita",
-        descricao,
-        valor,
-        categoria
-    });
-
-    salvarDados();
-    renderizarMovimentacoes();
-    renderizarHistorico();
-
-    input_receita.value = "";
-    input_descricao_receita.value = "";
 });
 
 //DESPESA
 btn_despesa.addEventListener("click", function () {
-    const valor = Number(input_despesa.value);
-    const descricao = input_descricao_despesa.value;
-    const categoria = categoriaDespesa.value;
+
+    adicionarMovimentacao(
+        "despesa",
+        input_despesa,
+        input_descricao_despesa,
+        categoriaDespesa
+    );
+
+});
+
+// ADICIONA A MOVIMENTACAO NOS BOTOES DE ADD RECEITA/DESPESA
+function adicionarMovimentacao(
+    tipo,
+    inputValor,
+    inputDescricao,
+    selectCategoria){
+
+
+    const valor = Number(inputValor.value);
+    const descricao = inputDescricao.value;
+    const categoria = selectCategoria.value;
 
     if (!validarValor(valor)) {
         return;
     }
 
     movimentacoes.push({
-        tipo: "despesa",
+        tipo,
         descricao,
         valor,
         categoria
     });
 
     salvarDados();
-    renderizarMovimentacoes();
-    renderizarHistorico();
+    atualizarTela();
 
-    input_despesa.value = "";
-    input_descricao_despesa.value = "";
-});
+    input_receita.value = "";
+    input_descricao_receita.value = "";
+}
+
 
 //ATUALIZA O SALDO/RECEITA/DESPESA TOTAL
 function atualizarSaldo() {
     saldo.textContent = `Saldo: R$ ${saldoTotal}`;
     receita_total.textContent = `Receitas Totais: R$ ${receitaTotal}`;
-    despesa_total.textContent = `Receitas Totais: R$ ${despesaTotal}`;
+    despesa_total.textContent = `Despesa Totais: R$ ${despesaTotal}`;
 }
 
+// VALIDA PARA DIGITAR SOMENTE VALORES POSITIVOS
 function validarValor(valor) {
     if (valor <= 0) {
         alert("Digite numeros positivos");
@@ -103,6 +109,7 @@ function validarValor(valor) {
     return true;
 }
 
+// CRIA BOTAO PARA EXCLUIR RECEITA/DESPESA ADICIONADA
 function criarBotaoExcluir(indice) {
     const botao = document.createElement("button");
 
@@ -198,6 +205,12 @@ function renderizarHistorico() {
     });
 }
 
-calcularMovimentacoes();
-renderizarHistorico();
-renderizarMovimentacoes();
+
+// ATUALIZA A TELA COM TODAS AS FUNCOES QUE SAO NECESSARIAS PARA FUNCIONAR E ATUALIZAR AUTOMATICAMENTE
+function atualizarTela() {
+    calcularMovimentacoes();
+    renderizarHistorico();
+    renderizarMovimentacoes();
+}
+
+atualizarTela();
