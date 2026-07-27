@@ -5,6 +5,8 @@ const dadosSalvos = localStorage.getItem("movimentacoes");
 
 if (dadosSalvos) {
     movimentacoes = JSON.parse(dadosSalvos);
+
+    ordenarMovimentacoes();
 }
 
 // DESCRICAO
@@ -36,6 +38,10 @@ const despesa_total = document.getElementById("despesa-total")
 let receitaTotal = 0;
 let despesaTotal = 0;
 
+// DATA DESPESA/RECEITA
+const data_receita = document.getElementById("data-receita");
+const data_despesa = document.getElementById("data-despesa");
+
 
 //RECEITA
 btn_receita.addEventListener("click", function () {
@@ -44,7 +50,8 @@ btn_receita.addEventListener("click", function () {
         "receita",
         input_receita,
         input_descricao_receita,
-        categoriaReceita
+        categoriaReceita,
+        data_receita
     );
 
 });
@@ -56,7 +63,8 @@ btn_despesa.addEventListener("click", function () {
         "despesa",
         input_despesa,
         input_descricao_despesa,
-        categoriaDespesa
+        categoriaDespesa,
+        data_despesa
     );
 
 });
@@ -66,12 +74,14 @@ function adicionarMovimentacao(
     tipo,
     inputValor,
     inputDescricao,
-    selectCategoria){
+    selectCategoria,
+    inputData){
 
 
     const valor = Number(inputValor.value);
     const descricao = inputDescricao.value;
     const categoria = selectCategoria.value;
+    const data = inputData.value
 
     if (!validarValor(valor)) {
         return;
@@ -81,9 +91,11 @@ function adicionarMovimentacao(
         tipo,
         descricao,
         valor,
-        categoria
+        categoria,
+        data
     });
 
+    ordenarMovimentacoes();
     salvarDados();
     atualizarTela();
 
@@ -142,7 +154,7 @@ function renderizarMovimentacoes() {
         const item = document.createElement("div");
         const texto = document.createElement("p");
 
-        texto.textContent = `R$ ${mov.valor} | Categoria: ${mov.categoria} | Descricao: ${mov.descricao}`;
+        texto.textContent = `${formatarData(mov.data)} | R$ ${mov.valor} | Categoria: ${mov.categoria} | Descricao: ${mov.descricao}`;
 
         const botao = criarBotaoExcluir(indice);
 
@@ -179,6 +191,7 @@ function calcularMovimentacoes() {
     atualizarSaldo();
 }
 
+// CARREGA TODO O HISTORICO COM TODAS AS DESPESAS E RECEITAS JUNTAS
 function renderizarHistorico() {
     historico_geral.innerHTML = "";
 
@@ -199,9 +212,22 @@ function renderizarHistorico() {
         const emoji = mov.tipo === "receita" ? "💰" : "💸";
 
         item.textContent =
-            `${emoji} ${mov.tipo} | R$ ${mov.valor} | ${categoria} | ${mov.descricao}`;
+            `${emoji} ${mov.tipo} | ${formatarData(mov.data)} | R$ ${mov.valor} | ${categoria} | ${mov.descricao}`;
 
         historico_geral.prepend(item);
+    });
+}
+
+// FORMATA A DATA CORRETAMENTE
+function formatarData(data){
+    const partes = data.split("-");
+
+    return `${partes[2]}/${partes[1]}/${partes[0]}`
+}
+// FORMATA NA POSICAO CERTA AS MOVIMENTACOES
+function ordenarMovimentacoes() {
+    movimentacoes.sort(function (a, b) {
+        return new Date(a.data) - new Date(b.data);
     });
 }
 
