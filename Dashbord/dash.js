@@ -31,6 +31,11 @@ const filtro_historico = document.getElementById("filtro-historico");
 filtro_historico.addEventListener("change", function () {
     renderizarHistorico();
 });
+const pesquisa_historico = document.getElementById("pesquisa-historico");
+pesquisa_historico.addEventListener("input", function(){
+    renderizarHistorico();
+})
+
 
 //SOMA DESPESAS/RECEITAS TOPBAR
 const receita_total = document.getElementById("receita-total")
@@ -196,10 +201,15 @@ function renderizarHistorico() {
     historico_geral.innerHTML = "";
 
     const filtro = filtro_historico.value;
+    const pesquisa = pesquisa_historico.value.toLowerCase();
 
     movimentacoes.forEach(function (mov) {
 
         if (filtro !== "todos" && mov.categoria !== filtro) {
+            return;
+        }
+
+        if(pesquisa !== "" && !mov.descricao.toLowerCase().includes(pesquisa)){
             return;
         }
 
