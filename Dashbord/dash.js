@@ -27,12 +27,14 @@ const categoriaDespesa = document.getElementById("categoria-despesa");
 
 //HISTORICO
 const historico_geral = document.getElementById("historico");
+
 const filtro_historico = document.getElementById("filtro-historico");
 filtro_historico.addEventListener("change", function () {
     renderizarHistorico();
 });
+
 const pesquisa_historico = document.getElementById("pesquisa-historico");
-pesquisa_historico.addEventListener("input", function(){
+pesquisa_historico.addEventListener("input", function () {
     renderizarHistorico();
 })
 
@@ -80,7 +82,7 @@ function adicionarMovimentacao(
     inputValor,
     inputDescricao,
     selectCategoria,
-    inputData){
+    inputData) {
 
 
     const valor = Number(inputValor.value);
@@ -199,39 +201,32 @@ function calcularMovimentacoes() {
 // CARREGA TODO O HISTORICO COM TODAS AS DESPESAS E RECEITAS JUNTAS
 function renderizarHistorico() {
     historico_geral.innerHTML = "";
-
-    const filtro = filtro_historico.value;
-    const pesquisa = pesquisa_historico.value.toLowerCase();
-
+    
     movimentacoes.forEach(function (mov) {
-
-        if (filtro !== "todos" && mov.categoria !== filtro) {
+        
+        if(!passouFiltro(mov)){
             return;
         }
-
-        if(pesquisa !== "" && !mov.descricao.toLowerCase().includes(pesquisa)){
-            return;
-        }
-
+        
         const item = document.createElement("p");
-
+        
         const categoria =
-            mov.categoria.charAt(0).toUpperCase() +
-            mov.categoria.slice(1);
-
+        mov.categoria.charAt(0).toUpperCase() +
+        mov.categoria.slice(1);
+        
         const emoji = mov.tipo === "receita" ? "💰" : "💸";
-
+        
         item.textContent =
-            `${emoji} ${mov.tipo} | ${formatarData(mov.data)} | R$ ${mov.valor} | ${categoria} | ${mov.descricao}`;
-
+        `${emoji} ${mov.tipo} | ${formatarData(mov.data)} | R$ ${mov.valor} | ${categoria} | ${mov.descricao}`;
+        
         historico_geral.prepend(item);
     });
 }
 
 // FORMATA A DATA CORRETAMENTE
-function formatarData(data){
+function formatarData(data) {
     const partes = data.split("-");
-
+    
     return `${partes[2]}/${partes[1]}/${partes[0]}`
 }
 // FORMATA NA POSICAO CERTA AS MOVIMENTACOES
@@ -239,6 +234,22 @@ function ordenarMovimentacoes() {
     movimentacoes.sort(function (a, b) {
         return new Date(a.data) - new Date(b.data);
     });
+}
+// FILTRO E PESQUISA NO HISTORICO
+function passouFiltro(mov) {
+    
+    const filtro = filtro_historico.value;
+    const pesquisa = pesquisa_historico.value.toLowerCase();
+    
+    if (filtro !== "todos" && mov.categoria !== filtro) {
+        return;
+    }
+    
+    if (pesquisa !== "" && !mov.descricao.toLowerCase().includes(pesquisa)) {
+        return;
+    }
+
+    return true;
 }
 
 
