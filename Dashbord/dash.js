@@ -144,6 +144,34 @@ function criarBotaoExcluir(indice) {
     return botao;
 }
 
+// CRIA BOTAO EDITAR RECEITA/DESPESA
+function criarBotaoEditar(indice) {
+    const botaoEditar = document.createElement("button");
+
+    botaoEditar.textContent = "Editar";
+
+    botaoEditar.addEventListener("click", function () {
+
+        const mov = movimentacoes[indice];
+
+        console.log(mov);
+        if (mov.tipo === "receita") {
+            input_receita.value = mov.valor;
+            input_descricao_receita.value = mov.descricao;
+            categoriaReceita.value = mov.categoria;
+            data_receita.value = mov.data
+        } else {
+            input_despesa.value = mov.valor;
+            input_descricao_despesa.value = mov.descricao;
+            categoriaDespesa.value = mov.categoria;
+            data_despesa.value = mov.data;
+        }
+    });
+
+
+    return botaoEditar;
+}
+
 function salvarDados() {
     localStorage.setItem(
         "movimentacoes",
@@ -164,9 +192,11 @@ function renderizarMovimentacoes() {
         texto.textContent = `${formatarData(mov.data)} | R$ ${mov.valor} | Categoria: ${mov.categoria} | Descricao: ${mov.descricao}`;
 
         const botao = criarBotaoExcluir(indice);
+        const botaoEditar = criarBotaoEditar(indice);
 
         item.appendChild(texto);
         item.appendChild(botao);
+        item.appendChild(botaoEditar);
 
         if (mov.tipo === "receita") {
             lista_receitas.prepend(item);
@@ -201,24 +231,24 @@ function calcularMovimentacoes() {
 // CARREGA TODO O HISTORICO COM TODAS AS DESPESAS E RECEITAS JUNTAS
 function renderizarHistorico() {
     historico_geral.innerHTML = "";
-    
+
     movimentacoes.forEach(function (mov) {
-        
-        if(!passouFiltro(mov)){
+
+        if (!passouFiltro(mov)) {
             return;
         }
-        
+
         const item = document.createElement("p");
-        
+
         const categoria =
-        mov.categoria.charAt(0).toUpperCase() +
-        mov.categoria.slice(1);
-        
+            mov.categoria.charAt(0).toUpperCase() +
+            mov.categoria.slice(1);
+
         const emoji = mov.tipo === "receita" ? "💰" : "💸";
-        
+
         item.textContent =
-        `${emoji} ${mov.tipo} | ${formatarData(mov.data)} | R$ ${mov.valor} | ${categoria} | ${mov.descricao}`;
-        
+            `${emoji} ${mov.tipo} | ${formatarData(mov.data)} | R$ ${mov.valor} | ${categoria} | ${mov.descricao}`;
+
         historico_geral.prepend(item);
     });
 }
@@ -226,7 +256,7 @@ function renderizarHistorico() {
 // FORMATA A DATA CORRETAMENTE
 function formatarData(data) {
     const partes = data.split("-");
-    
+
     return `${partes[2]}/${partes[1]}/${partes[0]}`
 }
 // FORMATA NA POSICAO CERTA AS MOVIMENTACOES
@@ -237,14 +267,14 @@ function ordenarMovimentacoes() {
 }
 // FILTRO E PESQUISA NO HISTORICO
 function passouFiltro(mov) {
-    
+
     const filtro = filtro_historico.value;
     const pesquisa = pesquisa_historico.value.toLowerCase();
-    
+
     if (filtro !== "todos" && mov.categoria !== filtro) {
         return;
     }
-    
+
     if (pesquisa !== "" && !mov.descricao.toLowerCase().includes(pesquisa)) {
         return;
     }
