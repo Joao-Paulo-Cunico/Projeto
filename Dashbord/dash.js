@@ -1,6 +1,8 @@
 const saldo = document.getElementById("saldo");
 let saldoTotal = 0;
 let movimentacoes = [];
+let indiceEmEdicao = null;
+let tipoEmEdicao = null;
 const dadosSalvos = localStorage.getItem("movimentacoes");
 
 if (dadosSalvos) {
@@ -94,20 +96,40 @@ function adicionarMovimentacao(
         return;
     }
 
-    movimentacoes.push({
+    const movimentacao = {
         tipo,
         descricao,
         valor,
         categoria,
         data
-    });
+    };
+
+    if (indiceEmEdicao !== null && tipoEmEdicao === tipo) {
+        movimentacoes[indiceEmEdicao] = movimentacao;
+        indiceEmEdicao = null;
+        tipoEmEdicao = null;
+        atualizarBotoesFormulario();
+    } else {
+        movimentacoes.push(movimentacao);
+    }
 
     ordenarMovimentacoes();
     salvarDados();
     atualizarTela();
 
-    input_receita.value = "";
-    input_descricao_receita.value = "";
+    limparFormulario(inputValor, inputDescricao, selectCategoria, inputData);
+}
+
+function limparFormulario(inputValor, inputDescricao, selectCategoria, inputData) {
+    inputValor.value = "";
+    inputDescricao.value = "";
+    selectCategoria.selectedIndex = 0;
+    inputData.value = "";
+}
+
+function atualizarBotoesFormulario() {
+    btn_receita.textContent = "Adicionar";
+    btn_despesa.textContent = "Adicionar";
 }
 
 
@@ -136,6 +158,9 @@ function criarBotaoExcluir(indice) {
 
     botao.addEventListener("click", function () {
         movimentacoes.splice(indice, 1);
+        indiceEmEdicao = null;
+        tipoEmEdicao = null;
+        atualizarBotoesFormulario();
         salvarDados();
         renderizarMovimentacoes();
         renderizarHistorico();
@@ -153,6 +178,8 @@ function criarBotaoEditar(indice) {
     botaoEditar.addEventListener("click", function () {
 
         const mov = movimentacoes[indice];
+        indiceEmEdicao = indice;
+        tipoEmEdicao = mov.tipo;
 
         console.log(mov);
         if (mov.tipo === "receita") {
@@ -160,11 +187,15 @@ function criarBotaoEditar(indice) {
             input_descricao_receita.value = mov.descricao;
             categoriaReceita.value = mov.categoria;
             data_receita.value = mov.data
+            btn_receita.textContent = "Salvar edição";
+            btn_despesa.textContent = "Adicionar";
         } else {
             input_despesa.value = mov.valor;
             input_descricao_despesa.value = mov.descricao;
             categoriaDespesa.value = mov.categoria;
             data_despesa.value = mov.data;
+            btn_despesa.textContent = "Salvar edição";
+            btn_receita.textContent = "Adicionar";
         }
     });
 
