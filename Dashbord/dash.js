@@ -1,14 +1,21 @@
 const saldo = document.getElementById("saldo");
 let saldoTotal = 0;
 let movimentacoes = [];
-let indiceEmEdicao = null;
+let idEmEdicao = null;
 let tipoEmEdicao = null;
 const dadosSalvos = localStorage.getItem("movimentacoes");
 
 if (dadosSalvos) {
     movimentacoes = JSON.parse(dadosSalvos);
 
+    movimentacoes.forEach(function (mov) {
+        if (!mov.id) {
+            mov.id = Date.now() + Math.random();
+        }
+    });
+
     ordenarMovimentacoes();
+    salvarDados();
 }
 
 // DESCRICAO
@@ -97,6 +104,7 @@ function adicionarMovimentacao(
     }
 
     const movimentacao = {
+        id: Date.now(),
         tipo,
         descricao,
         valor,
@@ -104,10 +112,19 @@ function adicionarMovimentacao(
         data
     };
 
-    if (indiceEmEdicao !== null && tipoEmEdicao === tipo) {
-        movimentacoes[indiceEmEdicao] = movimentacao;
-        indiceEmEdicao = null;
+    if (idEmEdicao !== null && tipoEmEdicao === tipo) {
+
+        const indice = movimentacoes.findIndex(function (mov) {
+            return mov.id === idEmEdicao;
+        });
+
+        movimentacao.id = idEmEdicao;
+
+        movimentacoes[indice] = movimentacao;
+
+        idEmEdicao = null;
         tipoEmEdicao = null;
+
         atualizarBotoesFormulario();
     } else {
         movimentacoes.push(movimentacao);
@@ -151,35 +168,50 @@ function validarValor(valor) {
 }
 
 // CRIA BOTAO PARA EXCLUIR RECEITA/DESPESA ADICIONADA
-function criarBotaoExcluir(indice) {
+function criarBotaoExcluir(id) {
     const botao = document.createElement("button");
 
     botao.textContent = "Excluir";
 
     botao.addEventListener("click", function () {
+        const indice = movimentacoes.findIndex(function (mov) {
+            return mov.id === id;
+        });
+
+        if (indice === -1) {
+            return;
+        }
+
         movimentacoes.splice(indice, 1);
-        indiceEmEdicao = null;
+
+        idEmEdicao = null;
         tipoEmEdicao = null;
+
         atualizarBotoesFormulario();
         salvarDados();
-        renderizarMovimentacoes();
-        renderizarHistorico();
+        atualizarTela();
     });
 
     return botao;
 }
 
 // CRIA BOTAO EDITAR RECEITA/DESPESA
-function criarBotaoEditar(indice) {
+function criarBotaoEditar(id) {
     const botaoEditar = document.createElement("button");
 
     botaoEditar.textContent = "Editar";
 
     botaoEditar.addEventListener("click", function () {
 
-        const mov = movimentacoes[indice];
-        indiceEmEdicao = indice;
+        const mov = movimentacoes.find(function (mov) {
+            return mov.id === id;
+        });
+        idEmEdicao = mov.id;
         tipoEmEdicao = mov.tipo;
+
+        if (!mov) {
+            return;
+        }
 
         console.log(mov);
         if (mov.tipo === "receita") {
@@ -187,6 +219,7 @@ function criarBotaoEditar(indice) {
             input_descricao_receita.value = mov.descricao;
             categoriaReceita.value = mov.categoria;
             data_receita.value = mov.data
+
             btn_receita.textContent = "Salvar edição";
             btn_despesa.textContent = "Adicionar";
         } else {
@@ -194,6 +227,7 @@ function criarBotaoEditar(indice) {
             input_descricao_despesa.value = mov.descricao;
             categoriaDespesa.value = mov.categoria;
             data_despesa.value = mov.data;
+
             btn_despesa.textContent = "Salvar edição";
             btn_receita.textContent = "Adicionar";
         }
@@ -222,8 +256,8 @@ function renderizarMovimentacoes() {
 
         texto.textContent = `${formatarData(mov.data)} | R$ ${mov.valor} | Categoria: ${mov.categoria} | Descricao: ${mov.descricao}`;
 
-        const botao = criarBotaoExcluir(indice);
-        const botaoEditar = criarBotaoEditar(indice);
+        const botao = criarBotaoExcluir(mov.id);
+        const botaoEditar = criarBotaoEditar(mov.id);
 
         item.appendChild(texto);
         item.appendChild(botao);
@@ -316,7 +350,6 @@ function passouFiltro(mov) {
 
 // ATUALIZA A TELA COM TODAS AS FUNCOES QUE SAO NECESSARIAS PARA FUNCIONAR E ATUALIZAR AUTOMATICAMENTE
 function atualizarTela() {
-    calcularMovimentacoes();
     renderizarHistorico();
     renderizarMovimentacoes();
 }
