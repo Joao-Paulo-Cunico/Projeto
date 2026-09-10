@@ -6,16 +6,16 @@ let tipoEmEdicao = null;
 const dadosSalvos = localStorage.getItem("movimentacoes");
 
 if (dadosSalvos) {
-    movimentacoes = JSON.parse(dadosSalvos);
+  movimentacoes = JSON.parse(dadosSalvos);
 
-    movimentacoes.forEach(function (mov) {
-        if (!mov.id) {
-            mov.id = Date.now() + Math.random();
-        }
-    });
+  movimentacoes.forEach(function (mov) {
+    if (!mov.id) {
+      mov.id = Date.now() + Math.random();
+    }
+  });
 
-    ordenarMovimentacoes();
-    salvarDados();
+  ordenarMovimentacoes();
+  salvarDados();
 }
 
 // DESCRICAO
@@ -34,23 +34,26 @@ const input_despesa = document.getElementById("input-despesa");
 const btn_despesa = document.getElementById("btn-despesa");
 const categoriaDespesa = document.getElementById("categoria-despesa");
 
+// BOTAO CANCELAR
+const btn_cancelar_receita = document.getElementById("btn-cancelar-receita");
+const btn_cancelar_despesa = document.getElementById("btn-cancelar-despesa");
+
 //HISTORICO
 const historico_geral = document.getElementById("historico");
 
 const filtro_historico = document.getElementById("filtro-historico");
 filtro_historico.addEventListener("change", function () {
-    renderizarHistorico();
+  renderizarHistorico();
 });
 
 const pesquisa_historico = document.getElementById("pesquisa-historico");
 pesquisa_historico.addEventListener("input", function () {
-    renderizarHistorico();
-})
-
+  renderizarHistorico();
+});
 
 //SOMA DESPESAS/RECEITAS TOPBAR
-const receita_total = document.getElementById("receita-total")
-const despesa_total = document.getElementById("despesa-total")
+const receita_total = document.getElementById("receita-total");
+const despesa_total = document.getElementById("despesa-total");
 let receitaTotal = 0;
 let despesaTotal = 0;
 
@@ -58,310 +61,323 @@ let despesaTotal = 0;
 const data_receita = document.getElementById("data-receita");
 const data_despesa = document.getElementById("data-despesa");
 
-
 //RECEITA
 btn_receita.addEventListener("click", function () {
-
-    adicionarMovimentacao(
-        "receita",
-        input_receita,
-        input_descricao_receita,
-        categoriaReceita,
-        data_receita
-    );
-
+  adicionarMovimentacao(
+    "receita",
+    input_receita,
+    input_descricao_receita,
+    categoriaReceita,
+    data_receita,
+  );
+  
 });
 
 //DESPESA
 btn_despesa.addEventListener("click", function () {
-
-    adicionarMovimentacao(
-        "despesa",
-        input_despesa,
-        input_descricao_despesa,
-        categoriaDespesa,
-        data_despesa
-    );
-
+  adicionarMovimentacao(
+    "despesa",
+    input_despesa,
+    input_descricao_despesa,
+    categoriaDespesa,
+    data_despesa,
+  );
 });
 
 // ADICIONA A MOVIMENTACAO NOS BOTOES DE ADD RECEITA/DESPESA
 function adicionarMovimentacao(
+  tipo,
+  inputValor,
+  inputDescricao,
+  selectCategoria,
+  inputData,
+) {
+  const valor = Number(inputValor.value);
+  const descricao = inputDescricao.value;
+  const categoria = selectCategoria.value;
+  const data = inputData.value;
+
+  if (!validarMovimentacao(valor, descricao, data)) {
+    return;
+  }
+
+  const movimentacao = {
+    id: Date.now(),
     tipo,
-    inputValor,
-    inputDescricao,
-    selectCategoria,
-    inputData) {
+    descricao,
+    valor,
+    categoria,
+    data,
+  };
 
+  if (idEmEdicao !== null && tipoEmEdicao === tipo) {
+    const indice = movimentacoes.findIndex(function (mov) {
+      return mov.id === idEmEdicao;
+    });
 
-    const valor = Number(inputValor.value);
-    const descricao = inputDescricao.value;
-    const categoria = selectCategoria.value;
-    const data = inputData.value
+    movimentacao.id = idEmEdicao;
 
-    if (!validarMovimentacao(valor, descricao, data)) {
-        return;
-    }
+    movimentacoes[indice] = movimentacao;
 
-    const movimentacao = {
-        id: Date.now(),
-        tipo,
-        descricao,
-        valor,
-        categoria,
-        data
-    };
+    idEmEdicao = null;
+    tipoEmEdicao = null;
 
-    if (idEmEdicao !== null && tipoEmEdicao === tipo) {
+    atualizarBotoesFormulario();
+  } else {
+    movimentacoes.push(movimentacao);
+  }
 
-        const indice = movimentacoes.findIndex(function (mov) {
-            return mov.id === idEmEdicao;
-        });
+  ordenarMovimentacoes();
+  salvarDados();
+  atualizarTela();
 
-        movimentacao.id = idEmEdicao;
-
-        movimentacoes[indice] = movimentacao;
-
-        idEmEdicao = null;
-        tipoEmEdicao = null;
-
-        atualizarBotoesFormulario();
-    } else {
-        movimentacoes.push(movimentacao);
-    }
-
-    ordenarMovimentacoes();
-    salvarDados();
-    atualizarTela();
-
-    limparFormulario(inputValor, inputDescricao, selectCategoria, inputData);
+  limparFormulario(inputValor, inputDescricao, selectCategoria, inputData);
 }
 
-function limparFormulario(inputValor, inputDescricao, selectCategoria, inputData) {
-    inputValor.value = "";
-    inputDescricao.value = "";
-    selectCategoria.selectedIndex = 0;
-    inputData.value = "";
+function limparFormulario(
+  inputValor,
+  inputDescricao,
+  selectCategoria,
+  inputData,
+) {
+  inputValor.value = "";
+  inputDescricao.value = "";
+  selectCategoria.selectedIndex = 0;
+  inputData.value = "";
 }
 
 function atualizarBotoesFormulario() {
-    btn_receita.textContent = "Adicionar";
-    btn_despesa.textContent = "Adicionar";
+  btn_receita.textContent = "Adicionar";
+  btn_despesa.textContent = "Adicionar";
 }
-
 
 //ATUALIZA O SALDO/RECEITA/DESPESA TOTAL
 function atualizarSaldo() {
-    saldo.textContent = `Saldo: R$ ${saldoTotal}`;
-    receita_total.textContent = `Receitas Totais: R$ ${receitaTotal}`;
-    despesa_total.textContent = `Despesa Totais: R$ ${despesaTotal}`;
+  saldo.textContent = `Saldo: R$ ${saldoTotal}`;
+  receita_total.textContent = `Receitas Totais: R$ ${receitaTotal}`;
+  despesa_total.textContent = `Despesa Totais: R$ ${despesaTotal}`;
 }
 
-// VALIDA PARA DIGITAR SOMENTE VALORES POSITIVOS
+// VALIDA PARA DIGITAR SOMENTE VALORES POSITIVOS, DESCRICAO E DATA
 function validarMovimentacao(valor, descricao, data) {
-    if (valor <= 0) {
-        alert("Digite numeros positivos");
-        return false;
-    }
+  if (valor <= 0) {
+    alert("Digite numeros positivos");
+    return false;
+  }
 
-    if (descricao.trim() === ""){
-        alert("Digite uma descrição.")
-        return false;
-    }
+  if (descricao.trim() === "") {
+    alert("Digite uma descrição.");
+    return false;
+  }
 
-    if(data === ""){
-        alert("Digite uma data.")
-        return false;
-    }
+  if (data === "") {
+    alert("Digite uma data.");
+    return false;
+  }
 
-    return true;
+  return true;
+
+  
 }
 
 // CRIA BOTAO PARA EXCLUIR RECEITA/DESPESA ADICIONADA
 function criarBotaoExcluir(id) {
-    const botao = document.createElement("button");
+  const botao = document.createElement("button");
 
-    botao.textContent = "Excluir";
+  botao.textContent = "Excluir";
 
-    botao.addEventListener("click", function () {
-        const indice = movimentacoes.findIndex(function (mov) {
-            return mov.id === id;
-        });
-
-        if (indice === -1) {
-            return;
-        }
-
-        movimentacoes.splice(indice, 1);
-
-        idEmEdicao = null;
-        tipoEmEdicao = null;
-
-        atualizarBotoesFormulario();
-        salvarDados();
-        atualizarTela();
+  botao.addEventListener("click", function () {
+    const indice = movimentacoes.findIndex(function (mov) {
+      return mov.id === id;
     });
 
-    return botao;
+    if (indice === -1) {
+      return;
+    }
+
+    movimentacoes.splice(indice, 1);
+
+    idEmEdicao = null;
+    tipoEmEdicao = null;
+
+    atualizarBotoesFormulario();
+    salvarDados();
+    atualizarTela();
+  });
+
+  return botao;
 }
 
 // CRIA BOTAO EDITAR RECEITA/DESPESA
 function criarBotaoEditar(id) {
-    const botaoEditar = document.createElement("button");
+  const botaoEditar = document.createElement("button");
 
-    botaoEditar.textContent = "Editar";
+  botaoEditar.textContent = "Editar";
 
-    botaoEditar.addEventListener("click", function () {
-
-        const mov = movimentacoes.find(function (mov) {
-            return mov.id === id;
-        });
-        idEmEdicao = mov.id;
-        tipoEmEdicao = mov.tipo;
-
-        if (!mov) {
-            return;
-        }
-
-        console.log(mov);
-        if (mov.tipo === "receita") {
-            input_receita.value = mov.valor;
-            input_descricao_receita.value = mov.descricao;
-            categoriaReceita.value = mov.categoria;
-            data_receita.value = mov.data
-
-            btn_receita.textContent = "Salvar edição";
-            btn_despesa.textContent = "Adicionar";
-        } else {
-            input_despesa.value = mov.valor;
-            input_descricao_despesa.value = mov.descricao;
-            categoriaDespesa.value = mov.categoria;
-            data_despesa.value = mov.data;
-
-            btn_despesa.textContent = "Salvar edição";
-            btn_receita.textContent = "Adicionar";
-        }
+  botaoEditar.addEventListener("click", function () {
+    const mov = movimentacoes.find(function (mov) {
+      return mov.id === id;
     });
+    idEmEdicao = mov.id;
+    tipoEmEdicao = mov.tipo;
 
+    if (!mov) {
+      return;
+    }
 
-    return botaoEditar;
+    console.log(mov);
+    if (mov.tipo === "receita") {
+      input_receita.value = mov.valor;
+      input_descricao_receita.value = mov.descricao;
+      categoriaReceita.value = mov.categoria;
+      data_receita.value = mov.data;
+
+      btn_receita.textContent = "Salvar edição";
+      btn_despesa.textContent = "Adicionar";
+    } else {
+      input_despesa.value = mov.valor;
+      input_descricao_despesa.value = mov.descricao;
+      categoriaDespesa.value = mov.categoria;
+      data_despesa.value = mov.data;
+
+      btn_despesa.textContent = "Salvar edição";
+      btn_receita.textContent = "Adicionar";
+    }
+  });
+
+  return botaoEditar;
+}
+
+// CRIA BOTAO PARA CANCELAR EDICAO RECEITA/DESPESA
+btn_cancelar_receita.addEventListener("click", cancelarEdicao);
+btn_cancelar_despesa.addEventListener("click", cancelarEdicao);
+
+function cancelarEdicao() {
+  idEmEdicao = null;
+  tipoEmEdicao = null;
+
+  limparFormulario(
+    input_receita,
+    input_descricao_receita,
+    categoriaReceita,
+    data_receita,
+  );
+
+  limparFormulario(
+    input_despesa,
+    input_descricao_despesa,
+    categoriaDespesa,
+    data_despesa,
+  );
+
+  atualizarBotoesFormulario();
 }
 
 function salvarDados() {
-    localStorage.setItem(
-        "movimentacoes",
-        JSON.stringify(movimentacoes)
-    );
+  localStorage.setItem("movimentacoes", JSON.stringify(movimentacoes));
 }
 
 // RENDERIZA AS MOVIMETACOES DE RECEITA E DESPESA
 function renderizarMovimentacoes() {
+  lista_receitas.innerHTML = "";
+  lista_despesa.innerHTML = "";
 
-    lista_receitas.innerHTML = "";
-    lista_despesa.innerHTML = "";
+  movimentacoes.forEach(function (mov, indice) {
+    const item = document.createElement("div");
+    const texto = document.createElement("p");
 
-    movimentacoes.forEach(function (mov, indice) {
-        const item = document.createElement("div");
-        const texto = document.createElement("p");
+    texto.textContent = `${formatarData(mov.data)} | R$ ${mov.valor} | Categoria: ${mov.categoria} | Descricao: ${mov.descricao}`;
 
-        texto.textContent = `${formatarData(mov.data)} | R$ ${mov.valor} | Categoria: ${mov.categoria} | Descricao: ${mov.descricao}`;
+    const botao = criarBotaoExcluir(mov.id);
+    const botaoEditar = criarBotaoEditar(mov.id);
 
-        const botao = criarBotaoExcluir(mov.id);
-        const botaoEditar = criarBotaoEditar(mov.id);
+    item.appendChild(texto);
+    item.appendChild(botao);
+    item.appendChild(botaoEditar);
 
-        item.appendChild(texto);
-        item.appendChild(botao);
-        item.appendChild(botaoEditar);
+    if (mov.tipo === "receita") {
+      lista_receitas.prepend(item);
+    } else {
+      lista_despesa.prepend(item);
+    }
+  });
 
-        if (mov.tipo === "receita") {
-            lista_receitas.prepend(item);
-        } else {
-            lista_despesa.prepend(item);
-        }
-    });
-
-    calcularMovimentacoes();
+  calcularMovimentacoes();
 }
 
 //ATUALIZA O SALDO CALCULANDO SEPARADAMENTE A SOMA DE CADA UM
 function calcularMovimentacoes() {
-    saldoTotal = 0;
-    receitaTotal = 0;
-    despesaTotal = 0;
+  saldoTotal = 0;
+  receitaTotal = 0;
+  despesaTotal = 0;
 
-    movimentacoes.forEach(function (mov, indice) {
+  movimentacoes.forEach(function (mov, indice) {
+    if (mov.tipo === "receita") {
+      saldoTotal += mov.valor;
+      receitaTotal += mov.valor;
+    } else {
+      saldoTotal -= mov.valor;
+      despesaTotal += mov.valor;
+    }
+  });
 
-        if (mov.tipo === "receita") {
-            saldoTotal += mov.valor;
-            receitaTotal += mov.valor;
-        } else {
-            saldoTotal -= mov.valor;
-            despesaTotal += mov.valor;
-        }
-    });
-
-    atualizarSaldo();
+  atualizarSaldo();
 }
 
 // CARREGA TODO O HISTORICO COM TODAS AS DESPESAS E RECEITAS JUNTAS
 function renderizarHistorico() {
-    historico_geral.innerHTML = "";
+  historico_geral.innerHTML = "";
 
-    movimentacoes.forEach(function (mov) {
+  movimentacoes.forEach(function (mov) {
+    if (!passouFiltro(mov)) {
+      return;
+    }
 
-        if (!passouFiltro(mov)) {
-            return;
-        }
+    const item = document.createElement("p");
 
-        const item = document.createElement("p");
+    const categoria =
+      mov.categoria.charAt(0).toUpperCase() + mov.categoria.slice(1);
 
-        const categoria =
-            mov.categoria.charAt(0).toUpperCase() +
-            mov.categoria.slice(1);
+    const emoji = mov.tipo === "receita" ? "💰" : "💸";
 
-        const emoji = mov.tipo === "receita" ? "💰" : "💸";
+    item.textContent = `${emoji} ${mov.tipo} | ${formatarData(mov.data)} | R$ ${mov.valor} | ${categoria} | ${mov.descricao}`;
 
-        item.textContent =
-            `${emoji} ${mov.tipo} | ${formatarData(mov.data)} | R$ ${mov.valor} | ${categoria} | ${mov.descricao}`;
-
-        historico_geral.prepend(item);
-    });
+    historico_geral.prepend(item);
+  });
 }
 
 // FORMATA A DATA CORRETAMENTE
 function formatarData(data) {
-    const partes = data.split("-");
+  const partes = data.split("-");
 
-    return `${partes[2]}/${partes[1]}/${partes[0]}`
+  return `${partes[2]}/${partes[1]}/${partes[0]}`;
 }
 // FORMATA NA POSICAO CERTA AS MOVIMENTACOES
 function ordenarMovimentacoes() {
-    movimentacoes.sort(function (a, b) {
-        return new Date(a.data) - new Date(b.data);
-    });
+  movimentacoes.sort(function (a, b) {
+    return new Date(a.data) - new Date(b.data);
+  });
 }
 // FILTRO E PESQUISA NO HISTORICO
 function passouFiltro(mov) {
+  const filtro = filtro_historico.value;
+  const pesquisa = pesquisa_historico.value.toLowerCase();
 
-    const filtro = filtro_historico.value;
-    const pesquisa = pesquisa_historico.value.toLowerCase();
+  if (filtro !== "todos" && mov.categoria !== filtro) {
+    return;
+  }
 
-    if (filtro !== "todos" && mov.categoria !== filtro) {
-        return;
-    }
+  if (pesquisa !== "" && !mov.descricao.toLowerCase().includes(pesquisa)) {
+    return;
+  }
 
-    if (pesquisa !== "" && !mov.descricao.toLowerCase().includes(pesquisa)) {
-        return;
-    }
-
-    return true;
+  return true;
 }
-
 
 // ATUALIZA A TELA COM TODAS AS FUNCOES QUE SAO NECESSARIAS PARA FUNCIONAR E ATUALIZAR AUTOMATICAMENTE
 function atualizarTela() {
-    renderizarHistorico();
-    renderizarMovimentacoes();
+  renderizarHistorico();
+  renderizarMovimentacoes();
 }
 
 atualizarTela();
