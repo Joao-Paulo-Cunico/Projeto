@@ -99,7 +99,7 @@ function adicionarMovimentacao(
     const categoria = selectCategoria.value;
     const data = inputData.value
 
-    if (!validarValor(valor)) {
+    if (!validarMovimentacao(valor, descricao, data)) {
         return;
     }
 
@@ -158,9 +158,19 @@ function atualizarSaldo() {
 }
 
 // VALIDA PARA DIGITAR SOMENTE VALORES POSITIVOS
-function validarValor(valor) {
+function validarMovimentacao(valor, descricao, data) {
     if (valor <= 0) {
         alert("Digite numeros positivos");
+        return false;
+    }
+
+    if (descricao.trim() === ""){
+        alert("Digite uma descrição.")
+        return false;
+    }
+
+    if(data === ""){
+        alert("Digite uma data.")
         return false;
     }
 
