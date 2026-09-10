@@ -1,133 +1,92 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="pt-br">
-
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="dashboard.css">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="stylesheet" href="dashboard.css" />
     <script src="dash.js" defer></script>
     <title>Tela Inicial</title>
-</head>
+  </head>
 
-<body>
+  <body>
     <div class="app">
-        <aside class="sidebar">
-            <h2>Dashboard</h2>
-            <nav>
-                <ul class="menu">
-                    <li>Visão Geral</li>
-                    <li>Receitas</li>
-                    <li><a href="graficos.html">Gráficos</a></li>
-                    <li>Relatórios</li>
-                    <li>Metas</li>
-                    <li>Configurações</li>
-                </ul>
-            </nav>
-        </aside>
+      <aside class="sidebar">
+        <h2>Dashboard</h2>
+        <nav>
+          <ul class="menu">
+            <li>Visão Geral</li>
+            <li>Receitas</li>
+            <li><a href="graficos.html">Gráficos</a></li>
+            <li>Relatórios</li>
+            <li>Metas</li>
+            <li>Configurações</li>
+          </ul>
+        </nav>
+      </aside>
 
-        <main class="main">
-            <div class="topbar">
-                <h1>Olá</h1>
-                <h3 id="receita-total">Receitas Totais: R$ 0</h3>
-                <h3 id="despesa-total">Despesas Totais: R$ 0</h3>
-                <h3 id="saldo">Saldo: R$ 0</h3>
+      <main class="main">
+        <div class="topbar">
+          <h1>Olá</h1>
+          <h3 id="receita-total">Receitas Totais: R$ 0</h3>
+          <h3 id="despesa-total">Despesas Totais: R$ 0</h3>
+          <h3 id="saldo">Saldo: R$ 0</h3>
+        </div>
+
+        <section class="grid">
+          <article class="card">
+            <h4>Receitas</h4>
+            <div id="Adicionar-receita" class="form-inline">
+              <input id="input-receita" type="number" placeholder="Valor" />
+              <input
+                id="descricao-receita"
+                type="text"
+                placeholder="Descrição"
+              />
+              <input id="data-receita" type="date" />
+              <select id="categoria-receita"></select>
+              <button id="btn-receita">Adicionar</button>
+              <button id="btn-cancelar-receita">Cancelar</button>
             </div>
+            <div id="lista-receita"></div>
+          </article>
 
-            <section class="grid">
-                <article class="card">
-                    <h4>Receitas</h4>
-                    <div id="Adicionar-receita" class="form-inline">
-                        <input id="input-receita" type="number" placeholder="Valor">
-                        <input id="descricao-receita" type="text" placeholder="Descrição">
-                        <input id="data-receita" type="date">
-                        <select id="categoria-receita">
-                            <option value="salario">Salario</option>
-                            <option value="pix">Pix</option>
-                            <option value="presente">Presente</option>
-                            <option value="emprestimo">Emprestimo</option>
-                            <option value="transferencia">Transferencia</option>
-                            <option value="outros">Outros</option>
-                        </select>
-                        <button id="btn-receita">Adicionar</button>
-                        <button id="btn-cancelar-receita">Cancelar</button>
-                    </div>
-                    <div id="lista-receita"></div>
-                </article>
-                
-                <article class="card">
-                    <h4>Despesas</h4>
-                    <div id="Adicionar-despesa" class="form-inline">
-                        <input id="input-despesa" type="number" placeholder="Valor">
-                        <input id="descricao-despesa" type="text" placeholder="Descrição">
-                        <input id="data-despesa" type="date">
-                        <select id="categoria-despesa">
-                            <option value="academia">Academia</option>
-                            <option value="pix">Pix</option>
-                            <option value="presente">Presente</option>
-                            <option value="assinatura">Assinatura</option>
-                            <option value="casa">Casa</option>
-                            <option value="educacao">Educacao</option>
-                            <option value="lazer">Lazer</option>
-                            <option value="operacao_bancaria">Operacao Bancaria</option>
-                            <option value="saude">Saude</option>
-                            <option value="servicos">Servicos</option>
-                            <option value="mercado">Mercado</option>
-                            <option value="restaurante">Restaurante</option>
-                            <option value="trnasporte">Transporte</option>
-                            <option value="viagens">Viagens</option>
-                            <option value="outros">Outros</option>
-                        </select>
-                        <button id="btn-despesa">Adicionar</button>
-                        <button id="btn-cancelar-despesa">Cancelar</button>
-                    </div>
-                    <div id="lista-despesa"></div>
-                </article>
+          <article class="card">
+            <h4>Despesas</h4>
+            <div id="Adicionar-despesa" class="form-inline">
+              <input id="input-despesa" type="number" placeholder="Valor" />
+              <input
+                id="descricao-despesa"
+                type="text"
+                placeholder="Descrição"
+              />
+              <input id="data-despesa" type="date" />
+              <select id="categoria-despesa"></select>
+              <button id="btn-despesa">Adicionar</button>
+              <button id="btn-cancelar-despesa">Cancelar</button>
+            </div>
+            <div id="lista-despesa"></div>
+          </article>
 
-                <article class="card">
-                    <h4>Histórico</h4>
-                    <input type="text" id="pesquisa-historico" placeholder="Pesquisar somente a descrição...">
-                    <select id="filtro-historico">
-                        <option value="todos">Todos</option>
-                        <option value="salario">Salario</option>
-                        <option value="pix">Pix</option>
-                        <option value="presente">Presente</option>
-                        <option value="emprestimo">Emprestimo</option>
-                        <option value="transferencia">Transferencia</option>
-                        <option value="outros">Outros</option>
-                        <option value="academia">Academia</option>
-                        <option value="pix">Pix</option>
-                        <option value="presente">Presente</option>
-                        <option value="assinatura">Assinatura</option>
-                        <option value="casa">Casa</option>
-                        <option value="educacao">Educacao</option>
-                        <option value="lazer">Lazer</option>
-                        <option value="operacao_bancaria">Operacao Bancaria</option>
-                        <option value="saude">Saude</option>
-                        <option value="servicos">Servicos</option>
-                        <option value="mercado">Mercado</option>
-                        <option value="restaurante">Restaurante</option>
-                        <option value="trnasporte">Transporte</option>
-                        <option value="viagens">Viagens</option>
-                    </select>
+          <article class="card">
+            <h4>Histórico</h4>
+            <input
+              type="text"
+              id="pesquisa-historico"
+              placeholder="Pesquisar somente a descrição..."
+            />
+            <select id="filtro-historico"></select>
 
-                    <div id="historico">
-                        <!-- itens adicionados aparecem aqui -->
-                    </div>
-                </article>
+            <div id="historico">
+              <!-- itens adicionados aparecem aqui -->
+            </div>
+          </article>
 
-                <article class="card">
-                    <h4>Extras</h4>
-                    <p>Relatórios e metas</p>
-
-
-                </article>
-            </section>
-        </main>
+          <article class="card">
+            <h4>Extras</h4>
+            <p>Relatórios e metas</p>
+          </article>
+        </section>
+      </main>
     </div>
-
-
-
-
-</body>
-
+  </body>
 </html>

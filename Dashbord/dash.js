@@ -27,12 +27,14 @@ const input_receita = document.getElementById("input-receita");
 const btn_receita = document.getElementById("btn-receita");
 const lista_receitas = document.getElementById("lista-receita");
 const categoriaReceita = document.getElementById("categoria-receita");
+//preencherCategorias(categoriaReceita);
 
 // DESPESA
 const lista_despesa = document.getElementById("lista-despesa");
 const input_despesa = document.getElementById("input-despesa");
 const btn_despesa = document.getElementById("btn-despesa");
 const categoriaDespesa = document.getElementById("categoria-despesa");
+//preencherCategorias(categoriaDespesa);
 
 // BOTAO CANCELAR
 const btn_cancelar_receita = document.getElementById("btn-cancelar-receita");
@@ -70,7 +72,6 @@ btn_receita.addEventListener("click", function () {
     categoriaReceita,
     data_receita,
   );
-  
 });
 
 //DESPESA
@@ -83,6 +84,74 @@ btn_despesa.addEventListener("click", function () {
     data_despesa,
   );
 });
+
+// CATEGORIAS
+const categorias = [
+  { value: "salario", label: "Salário" },
+  { value: "pix", label: "Pix" },
+  { value: "presente", label: "Presente" },
+  { value: "emprestimo", label: "Empréstimo" },
+  { value: "transferencia", label: "Transferência" },
+  { value: "academia", label: "Academia" },
+  { value: "assinatura", label: "Assinatura" },
+  { value: "casa", label: "Casa" },
+  { value: "educacao", label: "Educação" },
+  { value: "lazer", label: "Lazer" },
+  { value: "operacao_bancaria", label: "Operação Bancária" },
+  { value: "saude", label: "Saúde" },
+  { value: "servicos", label: "Serviços" },
+  { value: "mercado", label: "Mercado" },
+  { value: "restaurante", label: "Restaurante" },
+  { value: "transporte", label: "Transporte" },
+  { value: "viagens", label: "Viagens" },
+  { value: "outros", label: "Outros" },
+];
+
+function preencherCategorias(select) {
+  categorias.forEach(function (categoria) {
+    const option = document.createElement("option");
+
+    option.value = categoria.value;
+    option.textContent = categoria.label;
+
+    select.appendChild(option);
+  });
+}
+
+
+function preencherFiltroHistorico() {
+  const opcaoTodos = document.createElement("option");
+  
+  opcaoTodos.value = "todos";
+  opcaoTodos.textContent = "Todos";
+  
+  filtro_historico.appendChild(opcaoTodos);
+  
+  categorias.forEach(function (categoria) {
+    const option = document.createElement("option");
+    
+    option.value = categoria.value;
+    option.textContent = categoria.label;
+    
+    filtro_historico.appendChild(option);
+  });
+}
+
+function encontrarCategoria(idCategoria) {
+  const categoria = categorias.find(function (categoria) {
+    return categoria.value === idCategoria;
+  });
+  
+  if (!categoria) {
+    return idCategoria;
+  }
+  
+  return categoria.label;
+}
+
+preencherCategorias(categoriaReceita);
+preencherCategorias(categoriaDespesa);
+preencherFiltroHistorico();
 
 // ADICIONA A MOVIMENTACAO NOS BOTOES DE ADD RECEITA/DESPESA
 function adicionarMovimentacao(
@@ -176,8 +245,6 @@ function validarMovimentacao(valor, descricao, data) {
   }
 
   return true;
-
-  
 }
 
 // CRIA BOTAO PARA EXCLUIR RECEITA/DESPESA ADICIONADA
@@ -290,10 +357,16 @@ function renderizarMovimentacoes() {
 
     const botao = criarBotaoExcluir(mov.id);
     const botaoEditar = criarBotaoEditar(mov.id);
+    const acoes = document.createElement("div");
+
+    acoes.className = "acoes-movimentacao";
+    botao.className = "btn-excluir";
+    botaoEditar.className = "btn-editar";
 
     item.appendChild(texto);
-    item.appendChild(botao);
-    item.appendChild(botaoEditar);
+    acoes.appendChild(botaoEditar);
+    acoes.appendChild(botao);
+    item.appendChild(acoes);
 
     if (mov.tipo === "receita") {
       lista_receitas.prepend(item);
@@ -335,8 +408,7 @@ function renderizarHistorico() {
 
     const item = document.createElement("p");
 
-    const categoria =
-      mov.categoria.charAt(0).toUpperCase() + mov.categoria.slice(1);
+    const categoria = encontrarCategoria(mov.categoria);
 
     const emoji = mov.tipo === "receita" ? "💰" : "💸";
 

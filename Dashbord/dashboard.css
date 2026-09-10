@@ -129,19 +129,23 @@ h3#saldo {
 }
 
 .form-inline {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 8px;
+    display: grid;
+    grid-template-columns: 0.8fr 1.45fr 1fr 1fr auto auto;
+    gap: 10px;
     align-items: center;
+    padding: 14px;
     margin-bottom: 8px;
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    background: linear-gradient(135deg, #f8fafc, #f0fdfa);
 }
 
 .form-inline input,
 .form-inline select,
 #pesquisa-historico,
 #filtro-historico {
-    flex: 1 1 140px;
-    min-width: 120px;
+    width: 100%;
+    min-width: 0;
     padding: 10px 12px;
     border: 1px solid var(--border);
     border-radius: 10px;
@@ -169,6 +173,22 @@ h3#saldo {
     cursor: pointer;
     font-weight: 600;
     transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.form-inline button {
+    white-space: nowrap;
+}
+
+.form-inline button:last-child {
+    background: #fff;
+    color: var(--muted);
+    border: 1px solid var(--border);
+}
+
+.form-inline button:last-child:hover {
+    background: #f1f5f9;
+    color: var(--text);
+    box-shadow: 0 8px 20px rgba(15, 23, 42, 0.08);
 }
 
 .form-inline button:hover,
@@ -216,14 +236,36 @@ h3#saldo {
 #lista-despesa button {
     padding: 8px 10px;
     font-size: 0.85rem;
-
 }
 
-#lista-receita button:hover,
-#lista-despesa button:hover {
+.acoes-movimentacao {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex-shrink: 0;
+}
+
+#lista-receita .btn-editar,
+#lista-despesa .btn-editar {
+    background: #e0f2fe;
+    color: #0369a1;
+}
+
+#lista-receita .btn-editar:hover,
+#lista-despesa .btn-editar:hover {
+    background: #bae6fd;
+    box-shadow: 0 6px 14px rgba(2, 132, 199, 0.16);
+}
+
+#lista-receita .btn-excluir,
+#lista-despesa .btn-excluir {
     background: #fee2e2;
     color: #b91c1c;
-    border-color: #f89898;
+}
+
+#lista-receita .btn-excluir:hover,
+#lista-despesa .btn-excluir:hover {
+    background: #fecaca;
     box-shadow: 0 6px 14px rgba(220, 38, 38, 0.12);
 }
 
@@ -239,6 +281,14 @@ h3#saldo {
 
     .main {
         padding: 18px;
+    }
+
+    .form-inline {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .form-inline button {
+        width: 100%;
     }
 }
 
@@ -272,8 +322,8 @@ h3#saldo {
     }
 
     .form-inline {
-        flex-direction: column;
-        align-items: stretch;
+        grid-template-columns: 1fr;
+        padding: 12px;
     }
 
     .form-inline button {
@@ -291,5 +341,13 @@ h3#saldo {
     #lista-despesa > div {
         flex-direction: column;
         align-items: flex-start;
+    }
+
+    .acoes-movimentacao {
+        width: 100%;
+    }
+
+    .acoes-movimentacao button {
+        flex: 1;
     }
 }
