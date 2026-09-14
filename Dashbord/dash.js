@@ -1,3 +1,11 @@
+import { formatarData, formatarMoeda } from "./Js/utils.js";
+import {
+  categorias,
+  preencherCategorias,
+  preencherFiltroHistorico,
+  encontrarCategoria,
+} from "./Js/categorias.js";
+
 const saldo = document.getElementById("saldo");
 let saldoTotal = 0;
 let movimentacoes = [];
@@ -85,72 +93,10 @@ btn_despesa.addEventListener("click", function () {
   );
 });
 
-// CATEGORIAS
-const categorias = [
-  { value: "salario", label: "Salário" },
-  { value: "pix", label: "Pix" },
-  { value: "presente", label: "Presente" },
-  { value: "emprestimo", label: "Empréstimo" },
-  { value: "transferencia", label: "Transferência" },
-  { value: "academia", label: "Academia" },
-  { value: "assinatura", label: "Assinatura" },
-  { value: "casa", label: "Casa" },
-  { value: "educacao", label: "Educação" },
-  { value: "lazer", label: "Lazer" },
-  { value: "operacao_bancaria", label: "Operação Bancária" },
-  { value: "saude", label: "Saúde" },
-  { value: "servicos", label: "Serviços" },
-  { value: "mercado", label: "Mercado" },
-  { value: "restaurante", label: "Restaurante" },
-  { value: "transporte", label: "Transporte" },
-  { value: "viagens", label: "Viagens" },
-  { value: "outros", label: "Outros" },
-];
-
-function preencherCategorias(select) {
-  categorias.forEach(function (categoria) {
-    const option = document.createElement("option");
-
-    option.value = categoria.value;
-    option.textContent = categoria.label;
-
-    select.appendChild(option);
-  });
-}
-
-function preencherFiltroHistorico() {
-  const opcaoTodos = document.createElement("option");
-
-  opcaoTodos.value = "todos";
-  opcaoTodos.textContent = "Todos";
-
-  filtro_historico.appendChild(opcaoTodos);
-
-  categorias.forEach(function (categoria) {
-    const option = document.createElement("option");
-
-    option.value = categoria.value;
-    option.textContent = categoria.label;
-
-    filtro_historico.appendChild(option);
-  });
-}
-
-function encontrarCategoria(idCategoria) {
-  const categoria = categorias.find(function (categoria) {
-    return categoria.value === idCategoria;
-  });
-
-  if (!categoria) {
-    return idCategoria;
-  }
-
-  return categoria.label;
-}
-
+//CATEGORIAS
 preencherCategorias(categoriaReceita);
 preencherCategorias(categoriaDespesa);
-preencherFiltroHistorico();
+preencherFiltroHistorico(filtro_historico);
 
 // ADICIONA A MOVIMENTACAO NOS BOTOES DE ADD RECEITA/DESPESA
 function adicionarMovimentacao(
@@ -284,12 +230,13 @@ function criarBotaoEditar(id) {
     const mov = movimentacoes.find(function (mov) {
       return mov.id === id;
     });
-    idEmEdicao = mov.id;
-    tipoEmEdicao = mov.tipo;
 
     if (!mov) {
       return;
     }
+
+    idEmEdicao = mov.id;
+    tipoEmEdicao = mov.tipo;
 
     console.log(mov);
     if (mov.tipo === "receita") {
@@ -417,18 +364,13 @@ function renderizarHistorico() {
   });
 }
 
-// FORMATA A DATA CORRETAMENTE
-function formatarData(data) {
-  const partes = data.split("-");
-
-  return `${partes[2]}/${partes[1]}/${partes[0]}`;
-}
 // FORMATA NA POSICAO CERTA AS MOVIMENTACOES
 function ordenarMovimentacoes() {
   movimentacoes.sort(function (a, b) {
     return new Date(a.data) - new Date(b.data);
   });
 }
+
 // FILTRO E PESQUISA NO HISTORICO
 function passouFiltro(mov) {
   const filtro = filtro_historico.value;
@@ -443,14 +385,6 @@ function passouFiltro(mov) {
   }
 
   return true;
-}
-
-//FORMATAR VALOR
-function formatarMoeda(valor) {
-  return valor.toLocaleString("pt-BR", {
-    style: "currency",
-    currency: "BRL",
-  });
 }
 
 // ATUALIZA A TELA COM TODAS AS FUNCOES QUE SAO NECESSARIAS PARA FUNCIONAR E ATUALIZAR AUTOMATICAMENTE
