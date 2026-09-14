@@ -118,21 +118,20 @@ function preencherCategorias(select) {
   });
 }
 
-
 function preencherFiltroHistorico() {
   const opcaoTodos = document.createElement("option");
-  
+
   opcaoTodos.value = "todos";
   opcaoTodos.textContent = "Todos";
-  
+
   filtro_historico.appendChild(opcaoTodos);
-  
+
   categorias.forEach(function (categoria) {
     const option = document.createElement("option");
-    
+
     option.value = categoria.value;
     option.textContent = categoria.label;
-    
+
     filtro_historico.appendChild(option);
   });
 }
@@ -141,11 +140,11 @@ function encontrarCategoria(idCategoria) {
   const categoria = categorias.find(function (categoria) {
     return categoria.value === idCategoria;
   });
-  
+
   if (!categoria) {
     return idCategoria;
   }
-  
+
   return categoria.label;
 }
 
@@ -222,9 +221,9 @@ function atualizarBotoesFormulario() {
 
 //ATUALIZA O SALDO/RECEITA/DESPESA TOTAL
 function atualizarSaldo() {
-  saldo.textContent = `Saldo: R$ ${saldoTotal}`;
-  receita_total.textContent = `Receitas Totais: R$ ${receitaTotal}`;
-  despesa_total.textContent = `Despesa Totais: R$ ${despesaTotal}`;
+  saldo.textContent = `Saldo: ${formatarMoeda(saldoTotal)}`;
+  receita_total.textContent = `Receitas Totais: ${formatarMoeda(receitaTotal)}`;
+  despesa_total.textContent = `Despesas Totais: ${formatarMoeda(despesaTotal)}`;
 }
 
 // VALIDA PARA DIGITAR SOMENTE VALORES POSITIVOS, DESCRICAO E DATA
@@ -353,7 +352,7 @@ function renderizarMovimentacoes() {
     const item = document.createElement("div");
     const texto = document.createElement("p");
 
-    texto.textContent = `${formatarData(mov.data)} | R$ ${mov.valor} | Categoria: ${mov.categoria} | Descricao: ${mov.descricao}`;
+    texto.textContent = `${formatarData(mov.data)} | ${formatarMoeda(mov.valor)} | Categoria: ${mov.categoria} | Descricao: ${mov.descricao}`;
 
     const botao = criarBotaoExcluir(mov.id);
     const botaoEditar = criarBotaoEditar(mov.id);
@@ -412,7 +411,7 @@ function renderizarHistorico() {
 
     const emoji = mov.tipo === "receita" ? "💰" : "💸";
 
-    item.textContent = `${emoji} ${mov.tipo} | ${formatarData(mov.data)} | R$ ${mov.valor} | ${categoria} | ${mov.descricao}`;
+    item.textContent = `${emoji} ${mov.tipo} | ${formatarData(mov.data)} | ${formatarMoeda(mov.valor)} | ${categoria} | ${mov.descricao}`;
 
     historico_geral.prepend(item);
   });
@@ -444,6 +443,14 @@ function passouFiltro(mov) {
   }
 
   return true;
+}
+
+//FORMATAR VALOR
+function formatarMoeda(valor) {
+  return valor.toLocaleString("pt-BR", {
+    style: "currency",
+    currency: "BRL",
+  });
 }
 
 // ATUALIZA A TELA COM TODAS AS FUNCOES QUE SAO NECESSARIAS PARA FUNCIONAR E ATUALIZAR AUTOMATICAMENTE
