@@ -5,26 +5,33 @@ import {
   preencherFiltroHistorico,
   encontrarCategoria,
 } from "./Js/categorias.js";
+import { salvarDados, carregarDados } from "./Js/dados.js";
+import {
+  limparFormulario,
+  atualizarBotoesFormulario,
+} from "./Js/formularios.js";
+import { calcularMovimentacoes } from "./Js/movimentacoes.js";
+import {
+  renderizarHistorico,
+  renderizarMovimentacoes,
+} from "./Js/renderizacao.js";
 
 const saldo = document.getElementById("saldo");
 let saldoTotal = 0;
 let movimentacoes = [];
 let idEmEdicao = null;
 let tipoEmEdicao = null;
-const dadosSalvos = localStorage.getItem("movimentacoes");
 
-if (dadosSalvos) {
-  movimentacoes = JSON.parse(dadosSalvos);
+movimentacoes = carregarDados();
 
-  movimentacoes.forEach(function (mov) {
-    if (!mov.id) {
-      mov.id = Date.now() + Math.random();
-    }
-  });
+movimentacoes.forEach(function (mov) {
+  if (!mov.id) {
+    mov.id = Date.now() + Math.random();
+  }
+});
 
-  ordenarMovimentacoes();
-  salvarDados();
-}
+ordenarMovimentacoes();
+salvarDados(movimentacoes);
 
 // DESCRICAO
 const input_descricao_receita = document.getElementById("descricao-receita");
@@ -136,33 +143,16 @@ function adicionarMovimentacao(
     idEmEdicao = null;
     tipoEmEdicao = null;
 
-    atualizarBotoesFormulario();
+    atualizarBotoesFormulario(btn_receita, btn_despesa);
   } else {
     movimentacoes.push(movimentacao);
   }
 
   ordenarMovimentacoes();
-  salvarDados();
+  salvarDados(movimentacoes);
   atualizarTela();
 
   limparFormulario(inputValor, inputDescricao, selectCategoria, inputData);
-}
-
-function limparFormulario(
-  inputValor,
-  inputDescricao,
-  selectCategoria,
-  inputData,
-) {
-  inputValor.value = "";
-  inputDescricao.value = "";
-  selectCategoria.selectedIndex = 0;
-  inputData.value = "";
-}
-
-function atualizarBotoesFormulario() {
-  btn_receita.textContent = "Adicionar";
-  btn_despesa.textContent = "Adicionar";
 }
 
 //ATUALIZA O SALDO/RECEITA/DESPESA TOTAL
@@ -212,8 +202,8 @@ function criarBotaoExcluir(id) {
     idEmEdicao = null;
     tipoEmEdicao = null;
 
-    atualizarBotoesFormulario();
-    salvarDados();
+    atualizarBotoesFormulario(btn_receita, btn_despesa);
+    salvarDados(movimentacoes);
     atualizarTela();
   });
 
@@ -283,15 +273,11 @@ function cancelarEdicao() {
     data_despesa,
   );
 
-  atualizarBotoesFormulario();
-}
-
-function salvarDados() {
-  localStorage.setItem("movimentacoes", JSON.stringify(movimentacoes));
+  atualizarBotoesFormulario(btn_receita, btn_despesa);
 }
 
 // RENDERIZA AS MOVIMETACOES DE RECEITA E DESPESA
-function renderizarMovimentacoes() {
+function renderizarMovimentacoesAntiga() {
   lista_receitas.innerHTML = "";
   lista_despesa.innerHTML = "";
 
@@ -321,30 +307,17 @@ function renderizarMovimentacoes() {
     }
   });
 
-  calcularMovimentacoes();
-}
+  const totais = calcularMovimentacoes(movimentacoes);
 
-//ATUALIZA O SALDO CALCULANDO SEPARADAMENTE A SOMA DE CADA UM
-function calcularMovimentacoes() {
-  saldoTotal = 0;
-  receitaTotal = 0;
-  despesaTotal = 0;
-
-  movimentacoes.forEach(function (mov, indice) {
-    if (mov.tipo === "receita") {
-      saldoTotal += mov.valor;
-      receitaTotal += mov.valor;
-    } else {
-      saldoTotal -= mov.valor;
-      despesaTotal += mov.valor;
-    }
-  });
+  saldoTotal = totais.saldoTotal;
+  receitaTotal = totais.receitaTotal;
+  despesaTotal = totais.despesaTotal;
 
   atualizarSaldo();
 }
 
 // CARREGA TODO O HISTORICO COM TODAS AS DESPESAS E RECEITAS JUNTAS
-function renderizarHistorico() {
+function renderizarHistoricoAntiga() {
   historico_geral.innerHTML = "";
 
   movimentacoes.forEach(function (mov) {
@@ -389,8 +362,23 @@ function passouFiltro(mov) {
 
 // ATUALIZA A TELA COM TODAS AS FUNCOES QUE SAO NECESSARIAS PARA FUNCIONAR E ATUALIZAR AUTOMATICAMENTE
 function atualizarTela() {
-  renderizarHistorico();
-  renderizarMovimentacoes();
+  renderizarHistorico(
+    historico_geral,
+    movimentacoes,
+    passouFiltro,
+    encontrarCategoria,
+    formatarData,
+    formatarMoeda,
+  );
+  renderizarMovimentacoes(
+    lista_receitas,
+    lista_despesa,
+    movimentacoes,
+    formatarData,
+    formatarMoeda,
+    criarBotaoExcluir,
+    criarBotaoEditar,
+  );
 }
 
 atualizarTela();
