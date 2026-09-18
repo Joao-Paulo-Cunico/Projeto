@@ -1,6 +1,5 @@
 import { formatarData, formatarMoeda } from "./Js/utils.js";
 import {
-  categorias,
   preencherCategorias,
   preencherFiltroHistorico,
   encontrarCategoria,
@@ -10,11 +9,22 @@ import {
   limparFormulario,
   atualizarBotoesFormulario,
 } from "./Js/formularios.js";
-import { calcularMovimentacoes } from "./Js/movimentacoes.js";
+import {
+  calcularMovimentacoes,
+  ordenarMovimentacoes,
+  adicionarAoArray,
+  editarMovimentacao,
+  excluirMovimentacao,
+  criarMovimentacao,
+  validarMovimentacao,
+} from "./Js/movimentacoes.js";
 import {
   renderizarHistorico,
   renderizarMovimentacoes,
+  criarBotaoExcluir,
+  criarBotaoEditar,
 } from "./Js/renderizacao.js";
+import { passouFiltro } from "./Js/filtros.js";
 
 const saldo = document.getElementById("saldo");
 let saldoTotal = 0;
@@ -30,7 +40,7 @@ movimentacoes.forEach(function (mov) {
   }
 });
 
-ordenarMovimentacoes();
+ordenarMovimentacoes(movimentacoes);
 salvarDados(movimentacoes);
 
 // DESCRICAO
@@ -42,14 +52,12 @@ const input_receita = document.getElementById("input-receita");
 const btn_receita = document.getElementById("btn-receita");
 const lista_receitas = document.getElementById("lista-receita");
 const categoriaReceita = document.getElementById("categoria-receita");
-//preencherCategorias(categoriaReceita);
 
 // DESPESA
 const lista_despesa = document.getElementById("lista-despesa");
 const input_despesa = document.getElementById("input-despesa");
 const btn_despesa = document.getElementById("btn-despesa");
 const categoriaDespesa = document.getElementById("categoria-despesa");
-//preencherCategorias(categoriaDespesa);
 
 // BOTAO CANCELAR
 const btn_cancelar_receita = document.getElementById("btn-cancelar-receita");
@@ -60,12 +68,12 @@ const historico_geral = document.getElementById("historico");
 
 const filtro_historico = document.getElementById("filtro-historico");
 filtro_historico.addEventListener("change", function () {
-  renderizarHistorico();
+  atualizarTela();
 });
 
 const pesquisa_historico = document.getElementById("pesquisa-historico");
 pesquisa_historico.addEventListener("input", function () {
-  renderizarHistorico();
+  atualizarTela();
 });
 
 //SOMA DESPESAS/RECEITAS TOPBAR
@@ -118,37 +126,33 @@ function adicionarMovimentacao(
   const categoria = selectCategoria.value;
   const data = inputData.value;
 
-  if (!validarMovimentacao(valor, descricao, data)) {
+  const erro = validarMovimentacao(valor, descricao, data);
+
+  if (erro !== null) {
+    alert(erro);
     return;
   }
 
-  const movimentacao = {
-    id: Date.now(),
+  const movimentacao = criarMovimentacao(
     tipo,
-    descricao,
     valor,
+    descricao,
     categoria,
     data,
-  };
+  );
 
   if (idEmEdicao !== null && tipoEmEdicao === tipo) {
-    const indice = movimentacoes.findIndex(function (mov) {
-      return mov.id === idEmEdicao;
-    });
-
-    movimentacao.id = idEmEdicao;
-
-    movimentacoes[indice] = movimentacao;
+    editarMovimentacao(movimentacoes, idEmEdicao, movimentacao);
 
     idEmEdicao = null;
     tipoEmEdicao = null;
 
     atualizarBotoesFormulario(btn_receita, btn_despesa);
   } else {
-    movimentacoes.push(movimentacao);
+    adicionarAoArray(movimentacoes, movimentacao);
   }
 
-  ordenarMovimentacoes();
+  ordenarMovimentacoes(movimentacoes);
   salvarDados(movimentacoes);
   atualizarTela();
 
@@ -162,93 +166,35 @@ function atualizarSaldo() {
   despesa_total.textContent = `Despesas Totais: ${formatarMoeda(despesaTotal)}`;
 }
 
-// VALIDA PARA DIGITAR SOMENTE VALORES POSITIVOS, DESCRICAO E DATA
-function validarMovimentacao(valor, descricao, data) {
-  if (valor <= 0) {
-    alert("Digite numeros positivos");
-    return false;
-  }
-
-  if (descricao.trim() === "") {
-    alert("Digite uma descrição.");
-    return false;
-  }
-
-  if (data === "") {
-    alert("Digite uma data.");
-    return false;
-  }
-
-  return true;
-}
-
-// CRIA BOTAO PARA EXCLUIR RECEITA/DESPESA ADICIONADA
-function criarBotaoExcluir(id) {
-  const botao = document.createElement("button");
-
-  botao.textContent = "Excluir";
-
-  botao.addEventListener("click", function () {
-    const indice = movimentacoes.findIndex(function (mov) {
-      return mov.id === id;
-    });
-
-    if (indice === -1) {
-      return;
-    }
-
-    movimentacoes.splice(indice, 1);
-
-    idEmEdicao = null;
-    tipoEmEdicao = null;
-
-    atualizarBotoesFormulario(btn_receita, btn_despesa);
-    salvarDados(movimentacoes);
-    atualizarTela();
+function iniciarEdicao(id) {
+  const mov = movimentacoes.find(function (mov) {
+    return mov.id === id;
   });
 
-  return botao;
-}
+  if (!mov) {
+    return;
+  }
 
-// CRIA BOTAO EDITAR RECEITA/DESPESA
-function criarBotaoEditar(id) {
-  const botaoEditar = document.createElement("button");
+  idEmEdicao = mov.id;
+  tipoEmEdicao = mov.tipo;
 
-  botaoEditar.textContent = "Editar";
+  if (mov.tipo === "receita") {
+    input_receita.value = mov.valor;
+    input_descricao_receita.value = mov.descricao;
+    categoriaReceita.value = mov.categoria;
+    data_receita.value = mov.data;
 
-  botaoEditar.addEventListener("click", function () {
-    const mov = movimentacoes.find(function (mov) {
-      return mov.id === id;
-    });
+    btn_receita.textContent = "Salvar edição";
+    btn_despesa.textContent = "Adicionar";
+  } else {
+    input_despesa.value = mov.valor;
+    input_descricao_despesa.value = mov.descricao;
+    categoriaDespesa.value = mov.categoria;
+    data_despesa.value = mov.data;
 
-    if (!mov) {
-      return;
-    }
-
-    idEmEdicao = mov.id;
-    tipoEmEdicao = mov.tipo;
-
-    console.log(mov);
-    if (mov.tipo === "receita") {
-      input_receita.value = mov.valor;
-      input_descricao_receita.value = mov.descricao;
-      categoriaReceita.value = mov.categoria;
-      data_receita.value = mov.data;
-
-      btn_receita.textContent = "Salvar edição";
-      btn_despesa.textContent = "Adicionar";
-    } else {
-      input_despesa.value = mov.valor;
-      input_descricao_despesa.value = mov.descricao;
-      categoriaDespesa.value = mov.categoria;
-      data_despesa.value = mov.data;
-
-      btn_despesa.textContent = "Salvar edição";
-      btn_receita.textContent = "Adicionar";
-    }
-  });
-
-  return botaoEditar;
+    btn_despesa.textContent = "Salvar edição";
+    btn_receita.textContent = "Adicionar";
+  }
 }
 
 // CRIA BOTAO PARA CANCELAR EDICAO RECEITA/DESPESA
@@ -276,37 +222,8 @@ function cancelarEdicao() {
   atualizarBotoesFormulario(btn_receita, btn_despesa);
 }
 
-// RENDERIZA AS MOVIMETACOES DE RECEITA E DESPESA
-function renderizarMovimentacoesAntiga() {
-  lista_receitas.innerHTML = "";
-  lista_despesa.innerHTML = "";
-
-  movimentacoes.forEach(function (mov, indice) {
-    const item = document.createElement("div");
-    const texto = document.createElement("p");
-
-    texto.textContent = `${formatarData(mov.data)} | ${formatarMoeda(mov.valor)} | Categoria: ${mov.categoria} | Descricao: ${mov.descricao}`;
-
-    const botao = criarBotaoExcluir(mov.id);
-    const botaoEditar = criarBotaoEditar(mov.id);
-    const acoes = document.createElement("div");
-
-    acoes.className = "acoes-movimentacao";
-    botao.className = "btn-excluir";
-    botaoEditar.className = "btn-editar";
-
-    item.appendChild(texto);
-    acoes.appendChild(botaoEditar);
-    acoes.appendChild(botao);
-    item.appendChild(acoes);
-
-    if (mov.tipo === "receita") {
-      lista_receitas.prepend(item);
-    } else {
-      lista_despesa.prepend(item);
-    }
-  });
-
+// ATUALIZA A TELA COM TODAS AS FUNCOES QUE SAO NECESSARIAS PARA FUNCIONAR E ATUALIZAR AUTOMATICAMENTE
+function atualizarTela() {
   const totais = calcularMovimentacoes(movimentacoes);
 
   saldoTotal = totais.saldoTotal;
@@ -314,58 +231,13 @@ function renderizarMovimentacoesAntiga() {
   despesaTotal = totais.despesaTotal;
 
   atualizarSaldo();
-}
 
-// CARREGA TODO O HISTORICO COM TODAS AS DESPESAS E RECEITAS JUNTAS
-function renderizarHistoricoAntiga() {
-  historico_geral.innerHTML = "";
-
-  movimentacoes.forEach(function (mov) {
-    if (!passouFiltro(mov)) {
-      return;
-    }
-
-    const item = document.createElement("p");
-
-    const categoria = encontrarCategoria(mov.categoria);
-
-    const emoji = mov.tipo === "receita" ? "💰" : "💸";
-
-    item.textContent = `${emoji} ${mov.tipo} | ${formatarData(mov.data)} | ${formatarMoeda(mov.valor)} | ${categoria} | ${mov.descricao}`;
-
-    historico_geral.prepend(item);
-  });
-}
-
-// FORMATA NA POSICAO CERTA AS MOVIMENTACOES
-function ordenarMovimentacoes() {
-  movimentacoes.sort(function (a, b) {
-    return new Date(a.data) - new Date(b.data);
-  });
-}
-
-// FILTRO E PESQUISA NO HISTORICO
-function passouFiltro(mov) {
-  const filtro = filtro_historico.value;
-  const pesquisa = pesquisa_historico.value.toLowerCase();
-
-  if (filtro !== "todos" && mov.categoria !== filtro) {
-    return;
-  }
-
-  if (pesquisa !== "" && !mov.descricao.toLowerCase().includes(pesquisa)) {
-    return;
-  }
-
-  return true;
-}
-
-// ATUALIZA A TELA COM TODAS AS FUNCOES QUE SAO NECESSARIAS PARA FUNCIONAR E ATUALIZAR AUTOMATICAMENTE
-function atualizarTela() {
   renderizarHistorico(
     historico_geral,
     movimentacoes,
     passouFiltro,
+    filtro_historico.value,
+    pesquisa_historico.value,
     encontrarCategoria,
     formatarData,
     formatarMoeda,
@@ -378,6 +250,15 @@ function atualizarTela() {
     formatarMoeda,
     criarBotaoExcluir,
     criarBotaoEditar,
+    function (id) {
+      const foiExcluida = excluirMovimentacao(movimentacoes, id);
+
+      if (foiExcluida) {
+        salvarDados(movimentacoes);
+        atualizarTela();
+      }
+    },
+    iniciarEdicao,
   );
 }
 
