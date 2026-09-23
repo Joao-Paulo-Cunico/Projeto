@@ -10,7 +10,7 @@ export function limparFormulario(
   inputData.value = "";
 }
 
-export function atualizarBotoesFormulario(btn_receita, btn_despesa) {
-  btn_receita.textContent = "Adicionar";
-  btn_despesa.textContent = "Adicionar";
+export function atualizarBotoesFormulario(btnReceita, btnDespesa) {
+  btnReceita.textContent = "Adicionar";
+  btnDespesa.textContent = "Adicionar";
 }

@@ -27,10 +27,6 @@ export function ordenarMovimentacoes(movimentacoes) {
   });
 }
 
-export function adicionarAoArray(movimentacoes, movimentacao) {
-  movimentacoes.push(movimentacao);
-}
-
 export function editarMovimentacao(movimentacoes, id, novaMovimentacao) {
   const indice = movimentacoes.findIndex(function (mov) {
     return mov.id === id;

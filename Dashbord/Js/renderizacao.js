@@ -1,6 +1,6 @@
 // CARREGA TODO O HISTORICO COM TODAS AS DESPESAS E RECEITAS JUNTAS
 export function renderizarHistorico(
-  historico_geral,
+  historicoGeral,
   movimentacoes,
   passouFiltro,
   filtro,
@@ -9,7 +9,7 @@ export function renderizarHistorico(
   formatarData,
   formatarMoeda,
 ) {
-  historico_geral.innerHTML = "";
+  historicoGeral.innerHTML = "";
 
   movimentacoes.forEach(function (mov) {
     if (!passouFiltro(mov, filtro, pesquisa)) {
@@ -24,29 +24,32 @@ export function renderizarHistorico(
 
     item.textContent = `${emoji} ${mov.tipo} | ${formatarData(mov.data)} | ${formatarMoeda(mov.valor)} | ${categoria} | ${mov.descricao}`;
 
-    historico_geral.prepend(item);
+    historicoGeral.prepend(item);
   });
 }
 
 export function renderizarMovimentacoes(
-  lista_receitas,
-  lista_despesa,
+  listaReceitas,
+  listaDespesa,
   movimentacoes,
   formatarData,
   formatarMoeda,
+  encontrarCategoria,
   criarBotaoExcluir,
   criarBotaoEditar,
   excluirMovimentacao,
   iniciarEdicao,
 ) {
-  lista_receitas.innerHTML = "";
-  lista_despesa.innerHTML = "";
+  listaReceitas.innerHTML = "";
+  listaDespesa.innerHTML = "";
 
   movimentacoes.forEach(function (mov) {
     const item = document.createElement("div");
     const texto = document.createElement("p");
 
-    texto.textContent = `${formatarData(mov.data)} | ${formatarMoeda(mov.valor)} | Categoria: ${mov.categoria} | Descricao: ${mov.descricao}`;
+    const categoria = encontrarCategoria(mov.categoria);
+
+    texto.textContent = `${formatarData(mov.data)} | ${formatarMoeda(mov.valor)} | Categoria: ${categoria} | Descricao: ${mov.descricao}`;
 
     const botao = criarBotaoExcluir(mov.id, excluirMovimentacao);
     const botaoEditar = criarBotaoEditar(mov.id, iniciarEdicao);
@@ -62,9 +65,9 @@ export function renderizarMovimentacoes(
     item.appendChild(acoes);
 
     if (mov.tipo === "receita") {
-      lista_receitas.prepend(item);
+      listaReceitas.prepend(item);
     } else {
-      lista_despesa.prepend(item);
+      listaDespesa.prepend(item);
     }
   });
 }
