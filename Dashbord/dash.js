@@ -24,6 +24,7 @@ import {
   criarBotaoEditar,
 } from "./Js/renderizacao.js";
 import { passouFiltro } from "./Js/filtros.js";
+import { atualizarGraficos } from "./Js/graficos.js";
 
 const saldoElemento = document.getElementById("saldo");
 const movimentacoes = carregarDados();
@@ -158,6 +159,14 @@ function atualizarSaldo(saldoTotal, receitasTotais, despesasTotais) {
   saldoElemento.textContent = `Saldo: ${formatarMoeda(saldoTotal)}`;
   receitaTotalElemento.textContent = `Receitas Totais: ${formatarMoeda(receitasTotais)}`;
   despesaTotalElemento.textContent = `Despesas Totais: ${formatarMoeda(despesasTotais)}`;
+
+  saldoElemento.classList.remove("saldo-positivo", "saldo-negativo");
+
+  if (saldoTotal > 0) {
+    saldoElemento.classList.add("saldo-positivo");
+  } else if (saldoTotal < 0) {
+    saldoElemento.classList.add("saldo-negativo");
+  }
 }
 
 function iniciarEdicao(id) {
@@ -223,6 +232,12 @@ function atualizarTela() {
   );
 
   atualizarSaldo(saldoTotal, receitaTotal, despesaTotal);
+  atualizarGraficos(
+    movimentacoes,
+    receitaTotal,
+    despesaTotal,
+    encontrarCategoria,
+  );
 
   renderizarHistorico(
     historicoGeral,

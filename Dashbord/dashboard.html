@@ -4,6 +4,7 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <link rel="stylesheet" href="dashboard.css" />
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script type="module" src="dash.js"></script>
     <title>Tela Inicial</title>
   </head>
@@ -84,6 +85,28 @@
           <article class="card">
             <h4>Extras</h4>
             <p>Relatórios e metas</p>
+          </article>
+        </section>
+        <section class="graficos" aria-label="Gráficos financeiros">
+          <article class="card grafico-card">
+            <h4>Receitas x Despesas</h4>
+            <div class="grafico-container">
+              <canvas id="grafico-receitas-despesas"></canvas>
+            </div>
+          </article>
+
+          <article class="card grafico-card">
+            <h4>Despesas por Categoria</h4>
+            <div class="grafico-container">
+              <canvas id="grafico-despesas-categoria"></canvas>
+            </div>
+          </article>
+
+          <article class="card grafico-card grafico-evolucao">
+            <h4>Evolução Mensal</h4>
+            <div class="grafico-container">
+              <canvas id="grafico-evolucao-mensal"></canvas>
+            </div>
           </article>
         </section>
       </main>
