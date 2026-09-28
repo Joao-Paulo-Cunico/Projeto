@@ -101,12 +101,13 @@ export function atualizarGraficos(
   receitaTotal,
   despesaTotal,
   encontrarCategoria,
+  movimentacoesEvolucao = movimentacoes,
 ) {
   const despesasPorCategoria = agruparDespesasPorCategoria(
     movimentacoes,
     encontrarCategoria,
   );
-  const evolucaoMensal = agruparMovimentacoesPorMes(movimentacoes);
+  const evolucaoMensal = agruparMovimentacoesPorMes(movimentacoesEvolucao);
   const canvasReceitasDespesas = document.getElementById("grafico-receitas-despesas");
   const canvasDespesasCategoria = document.getElementById("grafico-despesas-categoria");
   const canvasEvolucaoMensal = document.getElementById("grafico-evolucao-mensal");

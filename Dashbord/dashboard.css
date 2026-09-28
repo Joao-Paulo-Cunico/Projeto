@@ -182,7 +182,8 @@ h3#saldo.saldo-negativo {
 .form-inline input,
 .form-inline select,
 #pesquisa-historico,
-#filtro-historico {
+#filtro-historico,
+#filtro-mes {
     width: 100%;
     min-width: 0;
     padding: 10px 12px;
@@ -196,7 +197,8 @@ h3#saldo.saldo-negativo {
 .form-inline input:focus,
 .form-inline select:focus,
 #pesquisa-historico:focus,
-#filtro-historico:focus {
+#filtro-historico:focus,
+#filtro-mes:focus {
     outline: none;
     border-color: var(--accent);
     box-shadow: 0 0 0 3px rgba(14, 165, 164, 0.16);
@@ -393,7 +395,8 @@ h3#saldo.saldo-negativo {
     .form-inline input,
     .form-inline select,
     #pesquisa-historico,
-    #filtro-historico {
+    #filtro-historico,
+    #filtro-mes {
         width: 100%;
     }
 

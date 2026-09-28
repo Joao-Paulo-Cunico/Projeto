@@ -23,7 +23,11 @@ import {
   criarBotaoExcluir,
   criarBotaoEditar,
 } from "./Js/renderizacao.js";
-import { passouFiltro } from "./Js/filtros.js";
+import {
+  passouFiltro,
+  passouFiltroMes,
+  preencherFiltroMes,
+} from "./Js/filtros.js";
 import { atualizarGraficos } from "./Js/graficos.js";
 
 const saldoElemento = document.getElementById("saldo");
@@ -68,6 +72,11 @@ filtroHistorico.addEventListener("change", function () {
   atualizarTela();
 });
 
+const filtroMes = document.getElementById("filtro-mes");
+filtroMes.addEventListener("change", function () {
+  atualizarTela();
+});
+
 const pesquisaHistorico = document.getElementById("pesquisa-historico");
 pesquisaHistorico.addEventListener("input", function () {
   atualizarTela();
@@ -107,6 +116,7 @@ btnDespesa.addEventListener("click", function () {
 preencherCategorias(categoriaReceita);
 preencherCategorias(categoriaDespesa);
 preencherFiltroHistorico(filtroHistorico);
+preencherFiltroMes(filtroMes, movimentacoes);
 
 // ADICIONA A MOVIMENTACAO NOS BOTOES DE ADD RECEITA/DESPESA
 function adicionarMovimentacao(
@@ -227,21 +237,28 @@ function cancelarEdicao() {
 
 // ATUALIZA A TELA COM TODAS AS FUNCOES QUE SAO NECESSARIAS PARA FUNCIONAR E ATUALIZAR AUTOMATICAMENTE
 function atualizarTela() {
+  preencherFiltroMes(filtroMes, movimentacoes);
+
+  const movimentacoesFiltradas = movimentacoes.filter(function (mov) {
+    return passouFiltroMes(mov, filtroMes.value);
+  });
+
   const { saldoTotal, receitaTotal, despesaTotal } = calcularMovimentacoes(
-    movimentacoes,
+    movimentacoesFiltradas,
   );
 
   atualizarSaldo(saldoTotal, receitaTotal, despesaTotal);
   atualizarGraficos(
-    movimentacoes,
+    movimentacoesFiltradas,
     receitaTotal,
     despesaTotal,
     encontrarCategoria,
+    movimentacoes,
   );
 
   renderizarHistorico(
     historicoGeral,
-    movimentacoes,
+    movimentacoesFiltradas,
     passouFiltro,
     filtroHistorico.value,
     pesquisaHistorico.value,
@@ -252,7 +269,7 @@ function atualizarTela() {
   renderizarMovimentacoes(
     listaReceitas,
     listaDespesa,
-    movimentacoes,
+    movimentacoesFiltradas,
     formatarData,
     formatarMoeda,
     encontrarCategoria,
