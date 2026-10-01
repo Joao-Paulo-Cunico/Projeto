@@ -35,12 +35,6 @@ const movimentacoes = carregarDados();
 let idEmEdicao = null;
 let tipoEmEdicao = null;
 
-movimentacoes.forEach(function (mov) {
-  if (!mov.id) {
-    mov.id = Date.now() + Math.random();
-  }
-});
-
 ordenarMovimentacoes(movimentacoes);
 salvarDados(movimentacoes);
 
@@ -138,6 +132,10 @@ function adicionarMovimentacao(
     return;
   }
 
+  if (idEmEdicao !== null && tipoEmEdicao !== tipo) {
+    cancelarEdicao();
+  }
+
   const movimentacao = criarMovimentacao(
     tipo,
     valor,
@@ -147,12 +145,20 @@ function adicionarMovimentacao(
   );
 
   if (idEmEdicao !== null && tipoEmEdicao === tipo) {
-    editarMovimentacao(movimentacoes, idEmEdicao, movimentacao);
+    const foiEditada = editarMovimentacao(
+      movimentacoes,
+      idEmEdicao,
+      movimentacao,
+    );
 
     idEmEdicao = null;
     tipoEmEdicao = null;
 
     atualizarBotoesFormulario(btnReceita, btnDespesa);
+
+    if (!foiEditada) {
+      movimentacoes.push(movimentacao);
+    }
   } else {
     movimentacoes.push(movimentacao);
   }
@@ -279,6 +285,10 @@ function atualizarTela() {
       const foiExcluida = excluirMovimentacao(movimentacoes, id);
 
       if (foiExcluida) {
+        if (idEmEdicao === id) {
+          cancelarEdicao();
+        }
+
         salvarDados(movimentacoes);
         atualizarTela();
       }

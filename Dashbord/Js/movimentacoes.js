@@ -1,3 +1,5 @@
+import { ehDataISOValida } from "./utils.js";
+
 //ATUALIZA O SALDO CALCULANDO SEPARADAMENTE A SOMA DE CADA UM
 export function calcularMovimentacoes(movimentacoes) {
   let saldoTotal = 0;
@@ -36,8 +38,11 @@ export function editarMovimentacao(movimentacoes, id, novaMovimentacao) {
     return false;
   }
 
-  novaMovimentacao.id = id;
-  movimentacoes[indice] = novaMovimentacao;
+  movimentacoes[indice] = {
+    ...movimentacoes[indice],
+    ...novaMovimentacao,
+    id,
+  };
 
   return true;
 }
@@ -64,7 +69,7 @@ export function criarMovimentacao(
   data,
 ) {
   return {
-    id: Date.now(),
+    id: crypto.randomUUID(),
     tipo,
     descricao,
     valor,
@@ -74,7 +79,7 @@ export function criarMovimentacao(
 }
 
 export function validarMovimentacao(valor, descricao, data) {
-  if (valor <= 0) {
+  if (!Number.isFinite(valor) || valor <= 0) {
     return "Digite numeros positivos";
   }
 
@@ -82,7 +87,7 @@ export function validarMovimentacao(valor, descricao, data) {
     return "Digite uma descrição.";
   }
 
-  if (data === "") {
+  if (!ehDataISOValida(data)) {
     return "Digite uma data.";
   }
 
