@@ -1,3 +1,5 @@
+import { formatarMoeda } from "./utils.js";
+
 let graficoReceitasDespesas = null;
 let graficoDespesasCategoria = null;
 let graficoEvolucaoMensal = null;
@@ -78,7 +80,16 @@ function criarGraficoRosca(elemento, labels, valores, cores) {
     options: {
       responsive: true,
       maintainAspectRatio: false,
-      plugins: { legend: { position: "bottom" } },
+      plugins: {
+        legend: { position: "bottom" },
+        tooltip: {
+          callbacks: {
+            label(contexto) {
+              return contexto.label;
+            },
+          },
+        },
+      },
     },
   });
 }
@@ -96,6 +107,24 @@ function repetirCores(quantidade) {
   });
 }
 
+function criarLabelsComResumo(labels, valores) {
+  const total = valores.reduce(function (soma, valor) {
+    return soma + valor;
+  }, 0);
+  const formatarPorcentagem = new Intl.NumberFormat("pt-BR", {
+    style: "percent",
+    minimumFractionDigits: 0,
+    maximumFractionDigits: 1,
+  });
+
+  return labels.map(function (label, indice) {
+    const valor = valores[indice];
+    const porcentagem = total > 0 ? valor / total : 0;
+
+    return `${label}: ${formatarPorcentagem.format(porcentagem)} — ${formatarMoeda(valor)}`;
+  });
+}
+
 export function atualizarGraficos(
   movimentacoes,
   receitaTotal,
@@ -107,6 +136,14 @@ export function atualizarGraficos(
     movimentacoes,
     encontrarCategoria,
   );
+  const receitasDespesasLabels = criarLabelsComResumo(
+    ["Receitas", "Despesas"],
+    [receitaTotal, despesaTotal],
+  );
+  const despesasCategoriaLabels = criarLabelsComResumo(
+    despesasPorCategoria.labels,
+    despesasPorCategoria.valores,
+  );
   const evolucaoMensal = agruparMovimentacoesPorMes(movimentacoesEvolucao);
   const canvasReceitasDespesas = document.getElementById("grafico-receitas-despesas");
   const canvasDespesasCategoria = document.getElementById("grafico-despesas-categoria");
@@ -115,14 +152,14 @@ export function atualizarGraficos(
   if (!graficoReceitasDespesas) {
     graficoReceitasDespesas = criarGraficoRosca(
       canvasReceitasDespesas,
-      ["Receitas", "Despesas"],
+      receitasDespesasLabels,
       [receitaTotal, despesaTotal],
       ["#0ea5a4", "#ef4444"],
     );
   } else {
     atualizarGraficoRosca(
       graficoReceitasDespesas,
-      ["Receitas", "Despesas"],
+      receitasDespesasLabels,
       [receitaTotal, despesaTotal],
       ["#0ea5a4", "#ef4444"],
     );
@@ -131,14 +168,14 @@ export function atualizarGraficos(
   if (!graficoDespesasCategoria) {
     graficoDespesasCategoria = criarGraficoRosca(
       canvasDespesasCategoria,
-      despesasPorCategoria.labels,
+      despesasCategoriaLabels,
       despesasPorCategoria.valores,
       repetirCores(despesasPorCategoria.valores.length),
     );
   } else {
     atualizarGraficoRosca(
       graficoDespesasCategoria,
-      despesasPorCategoria.labels,
+      despesasCategoriaLabels,
       despesasPorCategoria.valores,
       repetirCores(despesasPorCategoria.valores.length),
     );
