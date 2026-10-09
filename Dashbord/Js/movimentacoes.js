@@ -1,4 +1,4 @@
-import { ehDataISOValida } from "./utils.js";
+import { adicionarMesesAData, ehDataISOValida } from "./utils.js";
 
 //ATUALIZA O SALDO CALCULANDO SEPARADAMENTE A SOMA DE CADA UM
 export function calcularMovimentacoes(movimentacoes) {
@@ -75,7 +75,45 @@ export function criarMovimentacao(
     valor,
     categoria,
     data,
+    schemaVersion: 1,
+    serieId: null,
+    origem: "unica",
+    indiceOcorrencia: null,
+    totalOcorrencias: null,
   };
+}
+
+export function criarMovimentacoesParceladas(
+  tipo,
+  valorTotal,
+  descricao,
+  categoria,
+  dataInicial,
+  quantidadeParcelas,
+) {
+  const serieId = crypto.randomUUID();
+  const totalCentavos = Math.round(valorTotal * 100);
+  const valorBaseCentavos = Math.floor(totalCentavos / quantidadeParcelas);
+  const centavosRestantes = totalCentavos % quantidadeParcelas;
+
+  return Array.from({ length: quantidadeParcelas }, function (_, indice) {
+    const valorCentavos = valorBaseCentavos
+      + (indice < centavosRestantes ? 1 : 0);
+
+    return {
+      ...criarMovimentacao(
+        tipo,
+        valorCentavos / 100,
+        descricao,
+        categoria,
+        adicionarMesesAData(dataInicial, indice),
+      ),
+      serieId,
+      origem: "parcelada",
+      indiceOcorrencia: indice + 1,
+      totalOcorrencias: quantidadeParcelas,
+    };
+  });
 }
 
 export function validarMovimentacao(valor, descricao, data) {

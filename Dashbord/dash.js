@@ -15,6 +15,7 @@ import {
   editarMovimentacao,
   excluirMovimentacao,
   criarMovimentacao,
+  criarMovimentacoesParceladas,
   validarMovimentacao,
 } from "./Js/movimentacoes.js";
 import {
@@ -58,11 +59,29 @@ const categoriaDespesa = document.getElementById("categoria-despesa");
 const btnCancelarReceita = document.getElementById("btn-cancelar-receita");
 const btnCancelarDespesa = document.getElementById("btn-cancelar-despesa");
 
+// PARCELAMENTO
+const btnMaisOpcoes = document.getElementById("btn-mais-opcoes");
+const painelMaisOpcoes = document.getElementById("painel-mais-opcoes");
+const btnMostrarParcelamento = document.getElementById("btn-mostrar-parcelamento");
+const formularioParcelamento = document.getElementById("form-parcelamento");
+const tipoParcelamento = document.getElementById("tipo-parcelamento");
+const descricaoParcelamento = document.getElementById("descricao-parcelamento");
+const valorParcelamento = document.getElementById("valor-parcelamento");
+const categoriaParcelamento = document.getElementById("categoria-parcelamento");
+const dataParcelamento = document.getElementById("data-parcelamento");
+const quantidadeParcelas = document.getElementById("quantidade-parcelas");
+const btnAdicionarParcelamento = document.getElementById("btn-adicionar-parcelamento");
+
 //HISTORICO
 const historicoGeral = document.getElementById("historico");
 
 const filtroHistorico = document.getElementById("filtro-historico");
 filtroHistorico.addEventListener("change", function () {
+  atualizarTela();
+});
+
+const filtroTipo = document.getElementById("filtro-tipo");
+filtroTipo.addEventListener("change", function () {
   atualizarTela();
 });
 
@@ -106,9 +125,62 @@ btnDespesa.addEventListener("click", function () {
   );
 });
 
+btnMaisOpcoes.addEventListener("click", function () {
+  const estaAberto = !painelMaisOpcoes.hidden;
+
+  painelMaisOpcoes.hidden = estaAberto;
+  if (estaAberto) {
+    formularioParcelamento.hidden = true;
+  }
+  btnMaisOpcoes.setAttribute("aria-expanded", String(!estaAberto));
+});
+
+btnMostrarParcelamento.addEventListener("click", function () {
+  formularioParcelamento.hidden = false;
+});
+
+btnAdicionarParcelamento.addEventListener("click", function () {
+  const valorTotal = Number(valorParcelamento.value);
+  const descricao = descricaoParcelamento.value;
+  const categoria = categoriaParcelamento.value;
+  const data = dataParcelamento.value;
+  const quantidade = Number(quantidadeParcelas.value);
+  const erro = validarMovimentacao(valorTotal, descricao, data);
+
+  if (erro !== null) {
+    alert(erro);
+    return;
+  }
+
+  if (!Number.isInteger(quantidade) || quantidade < 2) {
+    alert("Digite uma quantidade de parcelas a partir de 2.");
+    return;
+  }
+
+  if (idEmEdicao !== null) {
+    cancelarEdicao();
+  }
+
+  const parcelas = criarMovimentacoesParceladas(
+    tipoParcelamento.value,
+    valorTotal,
+    descricao,
+    categoria,
+    data,
+    quantidade,
+  );
+
+  movimentacoes.push(...parcelas);
+  ordenarMovimentacoes(movimentacoes);
+  salvarDados(movimentacoes);
+  atualizarTela();
+  limparFormularioParcelamento();
+});
+
 //CATEGORIAS
 preencherCategorias(categoriaReceita);
 preencherCategorias(categoriaDespesa);
+preencherCategorias(categoriaParcelamento);
 preencherFiltroHistorico(filtroHistorico);
 preencherFiltroMes(filtroMes, movimentacoes);
 
@@ -241,6 +313,15 @@ function cancelarEdicao() {
   atualizarBotoesFormulario(btnReceita, btnDespesa);
 }
 
+function limparFormularioParcelamento() {
+  tipoParcelamento.selectedIndex = 0;
+  descricaoParcelamento.value = "";
+  valorParcelamento.value = "";
+  categoriaParcelamento.selectedIndex = 0;
+  dataParcelamento.value = "";
+  quantidadeParcelas.value = "";
+}
+
 // ATUALIZA A TELA COM TODAS AS FUNCOES QUE SAO NECESSARIAS PARA FUNCIONAR E ATUALIZAR AUTOMATICAMENTE
 function atualizarTela() {
   preencherFiltroMes(filtroMes, movimentacoes);
@@ -268,6 +349,7 @@ function atualizarTela() {
     passouFiltro,
     filtroHistorico.value,
     pesquisaHistorico.value,
+    filtroTipo.value,
     encontrarCategoria,
     formatarData,
     formatarMoeda,

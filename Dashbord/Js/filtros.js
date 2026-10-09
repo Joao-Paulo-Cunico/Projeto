@@ -1,7 +1,11 @@
-export function passouFiltro(mov, filtro, pesquisa) {
+export function passouFiltro(mov, filtro, pesquisa, filtroTipo = "todos") {
   pesquisa = pesquisa.toLowerCase();
 
   if (filtro !== "todos" && mov.categoria !== filtro) {
+    return false;
+  }
+
+  if (filtroTipo !== "todos" && mov.origem !== filtroTipo) {
     return false;
   }
 

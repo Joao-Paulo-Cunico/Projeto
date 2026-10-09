@@ -76,6 +76,12 @@
               placeholder="Pesquisar somente a descrição..."
             />
             <select id="filtro-historico"></select>
+            <label for="filtro-tipo">Tipo:</label>
+            <select id="filtro-tipo">
+              <option value="todos">Todos</option>
+              <option value="unica">Únicas</option>
+              <option value="parcelada">Parceladas</option>
+            </select>
             <label for="filtro-mes">Período:</label>
             <select id="filtro-mes"></select>
 
@@ -87,6 +93,53 @@
           <article class="card">
             <h4>Extras</h4>
             <p>Relatórios e metas</p>
+          </article>
+        </section>
+        <section class="opcoes-movimentacao" aria-label="Opções de movimentação">
+          <article class="card">
+            <button
+              id="btn-mais-opcoes"
+              type="button"
+              aria-expanded="false"
+              aria-controls="painel-mais-opcoes"
+            >
+              + Mais opções
+            </button>
+            <div id="painel-mais-opcoes" hidden>
+              <button id="btn-mostrar-parcelamento" type="button">
+                💳 Parcelamento
+              </button>
+              <div id="form-parcelamento" class="form-inline" hidden>
+                <select id="tipo-parcelamento" aria-label="Tipo da movimentação">
+                  <option value="despesa">Despesa</option>
+                  <option value="receita">Receita</option>
+                </select>
+                <input
+                  id="descricao-parcelamento"
+                  type="text"
+                  placeholder="Descrição"
+                />
+                <input
+                  id="valor-parcelamento"
+                  type="number"
+                  min="0.01"
+                  step="0.01"
+                  placeholder="Valor total da compra"
+                />
+                <select id="categoria-parcelamento" aria-label="Categoria"></select>
+                <input id="data-parcelamento" type="date" />
+                <input
+                  id="quantidade-parcelas"
+                  type="number"
+                  min="2"
+                  step="1"
+                  placeholder="Quantidade de parcelas"
+                />
+                <button id="btn-adicionar-parcelamento" type="button">
+                  Adicionar parcelas
+                </button>
+              </div>
+            </div>
           </article>
         </section>
         <section class="graficos" aria-label="Gráficos financeiros">

@@ -5,6 +5,7 @@ export function renderizarHistorico(
   passouFiltro,
   filtro,
   pesquisa,
+  filtroTipo,
   encontrarCategoria,
   formatarData,
   formatarMoeda,
@@ -12,17 +13,20 @@ export function renderizarHistorico(
   historicoGeral.innerHTML = "";
 
   movimentacoes.forEach(function (mov) {
-    if (!passouFiltro(mov, filtro, pesquisa)) {
+    if (!passouFiltro(mov, filtro, pesquisa, filtroTipo)) {
       return;
     }
 
     const item = document.createElement("p");
 
     const categoria = encontrarCategoria(mov.categoria);
+    const parcela = mov.origem === "parcelada"
+      ? ` — Parcela ${mov.indiceOcorrencia}/${mov.totalOcorrencias}`
+      : "";
 
     const emoji = mov.tipo === "receita" ? "💰" : "💸";
 
-    item.textContent = `${emoji} ${mov.tipo} | ${formatarData(mov.data)} | ${formatarMoeda(mov.valor)} | ${categoria} | ${mov.descricao}`;
+    item.textContent = `${emoji} ${mov.tipo} | ${formatarData(mov.data)} | ${formatarMoeda(mov.valor)} | ${categoria} | ${mov.descricao}${parcela}`;
 
     historicoGeral.prepend(item);
   });
@@ -48,8 +52,11 @@ export function renderizarMovimentacoes(
     const texto = document.createElement("p");
 
     const categoria = encontrarCategoria(mov.categoria);
+    const parcela = mov.origem === "parcelada"
+      ? ` | Parcela ${mov.indiceOcorrencia}/${mov.totalOcorrencias}`
+      : "";
 
-    texto.textContent = `${formatarData(mov.data)} | ${formatarMoeda(mov.valor)} | Categoria: ${categoria} | Descricao: ${mov.descricao}`;
+    texto.textContent = `${formatarData(mov.data)} | ${formatarMoeda(mov.valor)} | Categoria: ${categoria} | Descricao: ${mov.descricao}${parcela}`;
 
     const botao = criarBotaoExcluir(mov.id, excluirMovimentacao);
     const botaoEditar = criarBotaoEditar(mov.id, iniciarEdicao);
