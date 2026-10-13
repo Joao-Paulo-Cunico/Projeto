@@ -332,6 +332,12 @@ h3#saldo.saldo-negativo {
     box-shadow: 0 6px 14px rgba(220, 38, 38, 0.12);
 }
 
+#lista-receita,
+#lista-despesa {
+    max-height: 320px;
+    overflow-y: auto;
+}
+
 #historico {
     max-height: 320px;
     overflow: auto;

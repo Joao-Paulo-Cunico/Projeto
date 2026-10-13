@@ -183,6 +183,11 @@ preencherCategorias(categoriaDespesa);
 preencherCategorias(categoriaParcelamento);
 preencherFiltroHistorico(filtroHistorico);
 preencherFiltroMes(filtroMes, movimentacoes);
+const _now = new Date();
+const _mesAtual = `${_now.getFullYear()}-${String(_now.getMonth() + 1).padStart(2, "0")}`;
+if (filtroMes.querySelector(`option[value="${_mesAtual}"]`)) {
+  filtroMes.value = _mesAtual;
+}
 
 // ADICIONA A MOVIMENTACAO NOS BOTOES DE ADD RECEITA/DESPESA
 function adicionarMovimentacao(
